@@ -1,0 +1,181 @@
+from django import forms
+from .models import Proveedor, Ingreso, Usuario, Producto, Venta, Cliente, Rol
+from django.core.exceptions import ValidationError
+
+class ProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = ['nombre', 'proveedorNit','telefono','direccion' ]
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'proveedorNit': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'nombre': 'Nombre del Proveedor',
+            'proveedorNit': 'NIT del Proveedor',
+            'telefono': 'Teléfono',
+            'direccion': 'Dirección',
+        }
+        help_texts = {
+            'nombre': 'Ingrese el nombre del proveedor.',
+            'proveedorNit': 'Ingrese el NIT del proveedor.',
+            'telefono': 'Ingrese el número de teléfono del proveedor.',
+            'direccion': 'Ingrese la dirección del proveedor.',
+        }
+
+class IngresoForm(forms.ModelForm):
+    class Meta:
+        model = Ingreso
+        fields = ['ingresoId','ingresoValor', 'ingresoCantidad', 'proveedorNit', 'usuCedula']
+        widgets = {
+            'ingresoId': forms.NumberInput(attrs={'class': 'form-control'}),
+            'ingresoValor': forms.NumberInput(attrs={'class': 'form-control'}),
+            'ingresoCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'proveedorNit': forms.Select(attrs={'class': 'form-control'}),
+            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'ingresoId': 'ID del Ingreso',
+            'ingresoValor': 'Valor del Ingreso',
+            'ingresoCantidad': 'Cantidad Ingresada',
+            'proveedorNit': 'Proveedor',
+            'usuario': 'Usuario que registra',
+        }
+
+
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['clienteCedula', 'clienteNombre', 'clienteApellido', 'clienteUsuario',
+        'clienteContrasena', 'clienteFoto', 'clienteCorreo', 'clienteTelefono',
+        'clienteDireccion']
+        widgets = {
+            'clienteCedula': forms.TextInput(attrs={'class': 'form-control'}),
+            'clienteNombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'clienteApellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'clienteUsuario': forms.TextInput(attrs={'class': 'form-control'}),
+            'clienteContrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'clienteFoto': forms.FileInput(attrs={'class': 'form-control'}),
+            'clienteCorreo': forms.EmailInput(attrs={'class': 'form-control'}),
+            'clienteTelefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'clienteDireccion': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'clienteCedula': 'Cedula',
+            'clienteNombre': 'Nombre',
+            'clienteApellido': 'Apellido',
+            'clienteUsuario': 'Usuario',
+            'clienteContrasena': 'Contraseña',
+            'clienteFoto': 'Foto de perfil',
+            'clienteCorreo': 'Correo electrónico',
+            'clienteTelefono': 'Número de teléfono',
+            'clienteDireccion': 'Dirección',
+        }
+
+
+class UsuarioForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = [
+            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido',
+            'usuContrasena', 'usuCorreo', 'usuTelefono',
+            'usuDireccion', 'usuFoto'
+        ]
+        widgets = {
+            'usuCedula': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuUsuario': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuNombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuApellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuContrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
+            'usuCorreo': forms.EmailInput(attrs={'class': 'form-control'}),
+            'usuTelefono': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuDireccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'usuFoto': forms.FileInput(attrs={'class': 'form-control'})
+        }
+        labels = {
+            'usuCedula': 'Cédula',
+            'usuUsuario': 'Nombre de Usuario',
+            'usuNombre': 'Nombre',
+            'usuApellido': 'Apellido',
+            'usuContrasena': 'Contraseña',
+            'usuCorreo': 'Correo Electrónico',
+            'usuTelefono': 'Teléfono',
+            'usuDireccion': 'Dirección',
+            'usuFoto': 'Foto de Perfil (URL o archivo)',
+        }
+
+class RolForm (forms.ModelForm):
+    class Meta:
+        model = Rol
+        fields = [ 
+            'rolNombre', 'rolDescripcion',
+        ]
+        widgets = {
+            'rolNombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'rolDescripcion': forms.Textarea(attrs={'class': 'form-control'})
+            }
+        labels = {
+            'rolNombre': 'Nombre del Rol',
+            'rolDescripcion': 'Descripción del Rol',
+        }
+
+
+
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['productoId', 'productoNombre', 'productoPrecioUnidad', 'productoCantidad', 'productoDescripcion', 'ingreso']
+        widgets = {
+            'productoId': forms.TextInput(attrs={'class': 'form-control'}),
+            'productoNombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'productoPrecioUnidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'productoCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'productoDescripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'ingreso': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'productoId': 'ID del Producto',
+            'productoNombre': 'Nombre del Producto',
+            'productoPrecioUnidad': 'Precio por Unidad',
+            'productoCantidad': 'Cantidad',
+            'productoDescripcion': 'Descripción',
+            'ingreso': 'Ingreso asociado',
+        }
+
+class VentaForm(forms.ModelForm):
+    class Meta:
+        model = Venta
+        fields = [
+            'ventaId',
+            'ventaCantidad',
+            'ventaTipoProducto',
+            'ventaMetodoPago',
+            'ventaPrecio',
+            'productoId',
+            'clienteCedula',
+            'usuCedula',
+        ]
+        widgets = {
+            'ventaId': forms.TextInput(attrs={'class': 'form-control'}),
+            'ventaCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'ventaTipoProducto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional'}),
+            'ventaMetodoPago': forms.TextInput(attrs={'class': 'form-control'}),
+            'ventaPrecio': forms.NumberInput(attrs={'class': 'form-control'}),
+            'productoId': forms.Select(attrs={'class': 'form-control'}),
+            'clienteCedula': forms.Select(attrs={'class': 'form-control'}),
+            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+        labels = {
+            'ventaId': 'ID de Venta',
+            'ventaCantidad': 'Cantidad Vendida',
+            'ventaTipoProducto': 'Tipo de Producto (opcional)',
+            'ventaMetodoPago': 'Método de Pago',
+            'ventaPrecio': 'Precio Total',
+            'productoId': 'Producto',
+            'clienteCedula': 'Cliente',
+            'usuCedula': 'Usuario que registró la venta',
+        }
+

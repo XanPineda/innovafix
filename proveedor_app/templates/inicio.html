@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="mb-4">Bienvenido, {{ user.username }} 👋</h1>
+        <p class="lead">Selecciona una opción del menú para comenzar.</p>
+        <div class="mt-4">
+            <a href="{% url 'usuario_listar' %}" class="btn btn-info">Ver usuarios</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+ 

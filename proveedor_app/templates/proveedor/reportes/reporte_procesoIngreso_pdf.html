@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte Proceso Ingreso</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+    <h2>Reporte: Vista Proceso Ingreso</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Usuario Nombre</th>
+                <th>Ingreso ID</th>
+                <th>Ingreso Valor</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in datos %}
+            <tr>
+                <td>{{ d.usuNombre }}</td>
+                <td>{{ d.ingresoId }}</td>
+                <td>{{ d.ingresoValor }}</td>
+                <td>{{ d.nombre }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

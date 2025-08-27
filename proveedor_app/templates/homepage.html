@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnovaFix - Homepage</title>
+    <link rel="stylesheet" href="{% static 'homepage/styles.css' %}">
+</head>
+<body>
+    
+    <!-- Header - Menu-->
+
+    <header>
+        <div class="container_header">
+            <div class="logo">
+                <a href=#>
+                    <img src="{% static 'media/imagenesHomepage/logotitulo.png' %}" alt="">
+                </a>
+            </div>
+
+            <div class="menu">
+                <nav>
+                    <ul>
+                        <li><a href="#inicio">Home</a></li>
+                        <li><a href="#servicios">Nuestros Servicios</a></li>
+                        <li><a href="#costo">Costos</a></li>
+                        <li><a href="#">Contactanos</a></li>
+                    </ul>
+                </nav>
+
+                <a href="{% url 'login' %}" class="btn_access">Ingresar</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!--INICIO-->
+        <!--Portada de inicio-->
+        <div class="container_cover div_offset" id="inicio">
+            <div class="cover">
+                <section class="text_cover">
+                    <h1>LA HERRAMIENTA QUE <span>INNOVARÁ</span> Y OPTIMIZARA TODOS TUS PROCESOS CORPORATIVOS</h1>
+                    <p>InnovaFix es la solución perfecta para optimizar la gestión de inventarios y mejorar la atención al cliente. Con nuestra herramienta, transformarás tus procesos corporativos y potenciarás el éxito de tu negocio. ¡Descubre un nuevo nivel de eficiencia!</p>
+                    <a href="#" class="btn_read-more">Leer más</a>
+                </section>
+                <section class="image_cover">
+                    <img src="{% static 'media/imagenesHomepage/portadaimg.png' %}" alt="">
+                </section>
+            </div>
+        </div>
+
+        <!-- Generador de confianza-->
+
+        <div class="container_trust container_card-primary" id="servicios">
+                <div class="text_trust text_card-primary">
+                    <h1>Nuestros Servicios</h1>
+                </div>
+            <div class="trust card_primary">
+                <div class="container_trust container_box-cardPrimary">
+                     <div class="card_trust box_card-primary">
+                        <img src="{% static 'media/imagenesHomepage/gestioninv.png' %}" alt="">
+                        <h2>Gestión de Inventario</h2>
+                     </div>
+                </div>
+                <div class="container_trust container_box-cardPrimary">
+                    <div class="card_trust box_card-primary">
+                       <img src="{% static 'media/imagenesHomepage/atencioncliente.png' %}" alt="">
+                       <h2>Atención al Cliente</h2>
+                    </div>
+               </div>
+               <div class="container_trust container_box-cardPrimary">
+                <div class="card_trust box_card-primary">
+                   <img src="{% static 'media/imagenesHomepage/tiendavirtual.png' %}" alt="">
+                   <h2>Tienda Virtual</h2>
+                </div>
+           </div>
+           <div class="container_trust container_box-cardPrimary">
+            <div class="card_trust box_card-primary">
+               <img src="{% static 'media/imagenesHomepage/soportetecn.png' %}" alt="">
+               <h2>Soporte Técnico</h2>
+            </div>
+       </div>
+            </div>
+        </div>
+
+        <!--Costos-->
+
+        <div class="container_costos" id="costo">
+            <div class="costos">
+                <div class="titulocostos">
+                    <h1>Costos</h1>
+                    <p>Aquí hay un menu en el cual visualizarás los tipos de planes diferentes para nuestros servicios InnovaFix</p>
+                </div>
+                <div class="cajas_costos-basico cajas_costos-Titulo">
+                    <h1>Plan Basico</h1>
+                    <div class="cajas_costos-Texto">
+                        <p>Gestión de inventarios básica con soporte técnico por correo y reportes mensuales</p>
+                    </div>
+                    <div class="cajas_costos-Precio">
+                        <p>$ 46 / Mes</p>
+                    </div>
+                    <div class="cajas_Costos-detalles">
+                        <ul>
+                            <li>Gestion de inventarios básica</li>
+                            <li>Soporte técnico por correo</li>
+                            <li>Reportes manuales de stock</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="cajas_costos-prof cajas_costos-Titulo">
+                    <h1>Plan Profesional</h1>
+                    <div class="cajas_costos-Texto">
+                        <p>Incluye gestión avanzada de inventarios y herramientas de atención al cliente, además de reportes semanales</p>
+                    </div>
+                    <div class="cajas_costos-Precio">
+                        <p>$ 99 / Mes</p>
+                    </div>
+                    <div class="cajas_Costos-detalles">
+                        <ul>
+                            <li>Gestion de inventarios básica</li>
+                            <li>Soporte técnico por correo</li>
+                            <li>Reportes manuales de stock</li>
+                            <li>Capacitación inicial (Un solo uso)</li>
+                            <li>Chat Box (Atencion al cliente)</li>
+                            <li>Reportes semanales de rendimiento</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="cajas_costos-empresa cajas_costos-Titulo">
+                    <h1>Plan Empresarial</h1>
+                    <div class="cajas_costos-Texto">
+                        <p> Soluciones completas con consultoría personalizada, análisis de datos avanzado y soporte técnico prioritario</p>
+                    </div>
+                    <div class="cajas_costos-Precio">
+                        <p>$ 190 / Mes</p>
+                    </div>
+                    <div class="cajas_Costos-detalles">
+                        <ul>
+                            <li>Gestion de inventarios básica</li>
+                            <li>Soporte técnico por correo</li>
+                            <li>Reportes manuales de stock</li>
+                            <li>Capacitación inicial (Un solo uso)</li>
+                            <li>Chat Box (Atencion al cliente)</li>
+                            <li>Reportes semanales de rendimiento</li>
+                            <li>Consultoria personalizada</li>
+                            <li>Soporte técnico priorizado 24/7</li>
+                            <li>Capacitacion continua y actualización de software</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

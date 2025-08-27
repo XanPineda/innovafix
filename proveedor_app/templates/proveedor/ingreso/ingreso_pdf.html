@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ingresos</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+    <h2>Reporte de Ingresos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Proveedor</th>
+                <th>Usuario</th>
+                <th>Cantidad</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ingreso in ingresos %}
+            <tr>
+                <td>{{ ingreso.ingresoId }}</td>
+                <td>{{ ingreso.proveedorNit.nombre }}</td>
+                <td>{{ ingreso.usuCedula.usuNombre }}</td>
+                <td>{{ ingreso.ingresoCantidad }}</td>
+                <td>{{ ingreso.ingresoValor }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

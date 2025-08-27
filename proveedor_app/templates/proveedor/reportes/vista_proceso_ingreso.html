@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Reporte: Vista Proceso Ingreso</h2>
+    <a href="{% url 'exportar_proceso_ingreso_excel' %}" class="btn btn-success mb-3">
+      Exportar a Excel
+    </a>
+    <a href="{% url 'exportar_proceso_ingreso_pdf' %}" class="btn btn-danger mb-3">
+      Exportar a PDF
+    </a>
+    <div class="input-group mb-3">
+        <input type="text" id="busquedaProcesoIngreso" class="form-control" placeholder="Buscar en reporte...">
+    </div>
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Usuario Nombre</th>
+          <th>Ingreso ID</th>
+          <th>Ingreso Valor</th>
+          <th>Nombre</th>
+        </tr>
+      </thead>
+      <tbody id="tablaProcesoIngreso">
+        {% for d in datos %}
+        <tr>
+          <td>{{ d.usuNombre }}</td>
+          <td>{{ d.ingresoId }}</td>
+          <td>{{ d.ingresoValor }}</td>
+          <td>{{ d.nombre }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">No hay datos disponibles.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('busquedaProcesoIngreso');
+    function filtrarTabla() {
+        var filtro = input.value.toLowerCase();
+        document.querySelectorAll('#tablaProcesoIngreso tr').forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+        });
+    }
+    input.addEventListener('keyup', filtrarTabla);
+});
+</script>
+{% endblock %}

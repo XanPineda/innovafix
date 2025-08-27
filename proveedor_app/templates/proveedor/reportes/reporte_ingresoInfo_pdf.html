@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte Ingreso Info</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+    <h2>Reporte: Vista Ingreso Info</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Valor</th>
+                <th>Cantidad</th>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Usuario Nombre</th>
+                <th>Usuario Apellido</th>
+                <th>Usuario Correo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in datos %}
+            <tr>
+                <td>{{ d.ingresoId }}</td>
+                <td>{{ d.ingresoValor }}</td>
+                <td>{{ d.ingresoCantidad }}</td>
+                <td>{{ d.nombre }}</td>
+                <td>{{ d.direccion }}</td>
+                <td>{{ d.usuNombre }}</td>
+                <td>{{ d.usuApellido }}</td>
+                <td>{{ d.usuCorreo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

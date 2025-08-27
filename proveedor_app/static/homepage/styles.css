@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Orbitron:wght@400..900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Orbitron:wght@400..900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+:root{
+    --color_text-primary: #000;
+    --color_text-secondary: #229799;
+    --color_text-tertiary: #48cfbc;
+    --botton_color-primary: #fde74c;
+    --background_color-primary: #f5f5f5;
+    --decoration_color-primary: #525252;
+    --text_size-title: 40px;
+    --text_paragraph: 16px;
+}
+
+header{
+    display: flex;
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    z-index: 100;
+    background-color: #f1f1f1;
+}
+
+.container_header{
+    max-width: 1200px;
+    height: 100%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo{
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.logo img{
+    width: 200px;
+}
+
+.menu{
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0 20px;
+}
+
+.menu nav{
+    margin: 0px 20px;
+}
+
+.menu nav ul{
+    display: flex;
+}
+
+.menu nav ul li{
+    list-style: none;
+    margin: 20px 16px;
+}
+
+.menu nav ul li a{
+    color: var(--color_text-primary);
+    font-size: var(--text_paragraph);
+    position: relative;
+    font-family: 'Orbitron', sans-serif;
+    transition: .5s;
+}
+
+.menu nav ul li a:hover{
+    color: var(--color_text-secondary);
+    transition: .5s;
+}
+
+.btn_access{
+    display: block;
+    padding: 8px 50px;
+    border: 2px solid var(--botton_color-primary);
+    color: black;
+    border-radius: 8px;
+    font-weight: 500;
+    margin: 0px 20px;
+    transition: all 300ms;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.btn_access:hover{
+    color: var(--background_color-primary);
+    background: var(--botton_color-primary);
+}
+
+/*portada de inicio*/
+
+.container_cover{
+    padding-top: 140px;
+    padding-bottom: 140px;
+    background: var(--background_color-primary);
+}
+
+.cover{
+    max-width: 1200px;
+    margin: auto;
+    margin-top: 100px;
+    display: flex;
+    align-items: center;
+    padding: 0px 20px;
+}
+
+.text_cover{
+    width: 100%;
+    padding-right: 150px;
+}
+
+.text_cover h1{
+    font-size: 50px;
+    font-family: 'Afacad', sans-serif;
+    font-weight: 100;
+}
+
+.text_cover h1 span{
+    color: var(--botton_color-primary);
+    font-weight: 800;
+}
+
+.text_cover p{
+    font-size: var(--text_paragraph);
+    font-family: 'Afacad', sans-serif;
+    margin-top: 40px;
+    color: var(--decoration_color-primary);
+}
+
+.btn_read-more{
+    display: block;
+    text-align: center;
+    margin-top: 40px;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--color_text-secondary);
+    border-radius: 8px;
+    padding: 10px 20px;
+    border: 2px solid var(--color_text-secondary);
+    background-color: var(--background_color-primary);
+    transition: .5s;
+}
+
+.btn_read-more:hover{
+    color:var(--background_color-primary);
+    background-color: var(--color_text-secondary);
+    transition: .5s;
+}
+
+.image_cover{
+    width: 100%;
+}
+
+.image_cover{
+    width: 550px;
+}
+
+/*Estilos generales CARDS*/
+
+.container_card-primary{
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.card_primary{
+    max-width: 1200px;
+    margin: auto;
+    text-align: center;
+    padding: 0px 20px;
+    display: flex;
+}
+.text_trust h1{
+    text-align: center;
+}
+
+.text_card-primary{
+    max-width: 600px;
+    margin: auto;
+}
+
+.text_card-primary h1{
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 400;
+    font-size: var(--text_size-title);
+}
+
+.container_box-cardPrimary{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.box_card-primary{
+    max-width: 400px;
+    padding: 80px 0;
+    border-radius: 20px;
+    margin: 14px;
+    transition: all 300ms;
+    background-color: var(--color_text-secondary);
+    color: var(--background_color-primary);
+}
+
+.box_card-primary:hover{
+    border: 1px solid transparent;
+    background-color: var(--background_color-primary);
+    box-shadow: var(--decoration_color-primary);
+    border: 1px solid var(--color_text-secondary);
+    color: var(--color_text-secondary);
+}
+
+.box_card-primary h2{
+    font-family: 'Afacad', sans-serif;
+    font-size: 40px;
+    margin-top: 40px;
+    font-weight: 500;
+}
+
+/*Costos*/
+
+.container_costos{
+    padding-top: 100px;
+    background-color: var(--background_color-primary);
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.costos{
+    max-width: 1200px;
+    margin: auto;
+    text-align: center;
+    padding: 0px 20px;
+}
+
+.titulocostos h1{
+    font-family: 'Orbitron', sans-serif;
+    margin-bottom: 10px;
+    font-weight: 400;
+    font-size: var(--text_size-title);
+}
+
+.titulocostos p{
+    font-family: 'Afacad', sans-serif;
+    font-size: var(--text_paragraph);
+    margin-top: 20px;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.cajas_costos-Titulo{
+    margin: auto;
+    max-width: 600px;
+}
+
+.cajas_costos-Titulo h1{
+    font-family: 'Orbitron', sans-serif;
+    margin-top: 40px;
+    font-weight: 400;
+    font-size: 35px;
+}
+
+.cajas_costos-Texto{
+    margin: auto;
+    max-width: 600px;
+}
+
+.cajas_costos-Texto p{
+    font-family: 'Afacad', sans-serif;
+    font-size: var(--text_paragraph);
+    margin-top: 40px;
+    font-weight: 500;
+}
+
+.cajas_costos-Precio p{
+    font-family: 'Afacad', sans-serif;
+    font-size: 30px;
+    margin-top: 30px;
+    font-weight: 500;
+}
+
+.cajas_costos-Detalles{
+    margin-top: 20px;
+    font-weight: 500;
+}
+
+ul{
+    font-family: 'Afacad', sans-serif;
+    font-size: var(--text_paragraph);
+    margin: 30px 200px;
+}
+
+.cajas_costos-basico{
+    border: 1px solid var(--color_text-secondary);
+    border-radius: 20px;
+}
+.cajas_costos-basico h1{
+    background-color:#83dcddfd;
+}
+
+.cajas_costos-prof{
+    margin-top: 70px;
+    border: 1px solid var(--botton_color-primary);
+    border-radius: 20px;
+}
+
+.cajas_costos-prof h1{
+    background-color:#f6eb97;
+}
+
+.cajas_costos-empresa{
+    margin-top: 70px;
+    border: 1px solid rgba(0, 0, 0, 0.214);
+    border-radius: 20px;
+}
+
+.cajas_costos-empresa h1{
+    background-color:#212121fd;
+    color: #f5f5f5;
+}

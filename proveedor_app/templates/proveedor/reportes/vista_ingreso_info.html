@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Reporte: Vista Ingreso Info</h2>
+    <a href="{% url 'exportar_ingreso_info_excel' %}" class="btn btn-success mb-3">
+      Exportar a Excel
+    </a>
+    <a href="{% url 'exportar_ingreso_info_pdf' %}" class="btn btn-danger mb-3">
+      Exportar a PDF
+    </a>
+    <div class="input-group mb-3">
+        <input type="text" id="busquedaIngresoInfo" class="form-control" placeholder="Buscar en reporte...">
+    </div>
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Valor</th>
+          <th>Cantidad</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Usuario Nombre</th>
+          <th>Usuario Apellido</th>
+          <th>Usuario Correo</th>
+        </tr>
+      </thead>
+      <tbody id="tablaIngresoInfo">
+        {% for d in datos %}
+        <tr>
+          <td>{{ d.ingresoId }}</td>
+          <td>{{ d.ingresoValor }}</td>
+          <td>{{ d.ingresoCantidad }}</td>
+          <td>{{ d.nombre }}</td>
+          <td>{{ d.direccion }}</td>
+          <td>{{ d.usuNombre }}</td>
+          <td>{{ d.usuApellido }}</td>
+          <td>{{ d.usuCorreo }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">No hay datos disponibles.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('busquedaIngresoInfo');
+    function filtrarTabla() {
+        var filtro = input.value.toLowerCase();
+        document.querySelectorAll('#tablaIngresoInfo tr').forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+        });
+    }
+    input.addEventListener('keyup', filtrarTabla);
+});
+</script>
+{% endblock %}

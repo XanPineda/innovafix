@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ventas</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+    <h2>Reporte de Ventas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Venta</th>
+                <th>Cantidad</th>
+                <th>Tipo Producto</th>
+                <th>Método de Pago</th>
+                <th>Precio Total</th>
+                <th>Producto</th>
+                <th>Cliente</th>
+                <th>Usuario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td>{{ venta.ventaId }}</td>
+                <td>{{ venta.ventaCantidad }}</td>
+                <td>{{ venta.ventaTipoProducto }}</td>
+                <td>{{ venta.ventaMetodoPago }}</td>
+                <td>{{ venta.ventaPrecio }}</td>
+                <td>{{ venta.productoId }}</td>
+                <td>{{ venta.clienteCedula }}</td>
+                <td>{{ venta.usuCedula }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

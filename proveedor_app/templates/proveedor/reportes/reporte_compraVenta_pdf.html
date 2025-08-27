@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte Compra Venta</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+    <h2>Reporte: Vista Compra Venta</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente Nombre</th>
+                <th>Venta ID</th>
+                <th>Venta Cantidad</th>
+                <th>Producto Nombre</th>
+                <th>Producto Precio Unidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in datos %}
+            <tr>
+                <td>{{ d.clienteNombre }}</td>
+                <td>{{ d.ventaId }}</td>
+                <td>{{ d.ventaCantidad }}</td>
+                <td>{{ d.productoNombre }}</td>
+                <td>{{ d.productoPrecioUnidad }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

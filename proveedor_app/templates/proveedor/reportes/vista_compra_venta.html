@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Reporte: Vista Compra Venta</h2>
+    <!-- Botones de exportación -->
+    <a href="{% url 'exportar_compra_venta_excel' %}" class="btn btn-success mb-3">
+      Exportar a Excel
+    </a>
+    <a href="{% url 'exportar_compra_venta_pdf' %}" class="btn btn-danger mb-3">
+      Exportar a PDF
+    </a>
+    <div class="input-group mb-3">
+        <input type="text" id="busquedaCompraVenta" class="form-control" placeholder="Buscar en reporte...">
+    </div>
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Cliente Nombre</th>
+          <th>Venta ID</th>
+          <th>Venta Cantidad</th>
+          <th>Producto Nombre</th>
+          <th>Producto Precio Unidad</th>
+        </tr>
+      </thead>
+      <tbody id="tablaCompraVenta">
+        {% for d in datos %}
+        <tr>
+          <td>{{ d.clienteNombre }}</td>
+          <td>{{ d.ventaId }}</td>
+          <td>{{ d.ventaCantidad }}</td>
+          <td>{{ d.productoNombre }}</td>
+          <td>{{ d.productoPrecioUnidad }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No hay datos disponibles.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('busquedaCompraVenta');
+    function filtrarTabla() {
+        var filtro = input.value.toLowerCase();
+        document.querySelectorAll('#tablaCompraVenta tr').forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+        });
+    }
+    input.addEventListener('keyup', filtrarTabla);
+});
+</script>
+{% endblock %}

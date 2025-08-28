@@ -50,7 +50,7 @@ class Rol (models.Model):
 
 class Cliente(models.Model):
     clienteCedula = models.CharField(max_length=10, primary_key=True)
-    clienteNombre = models.CharField(max_length=25)
+    clienteNombre = models.CharField(max_length=25, unique=True)
     clienteApellido = models.CharField(max_length=25)
     clienteUsuario = models.CharField(max_length=10)
     clienteContrasena = models.CharField(max_length=10)
@@ -97,7 +97,7 @@ class Ingreso(models.Model):
 class Usuario(models.Model):
     usuCedula = models.CharField(max_length=10, primary_key=True)
     usuUsuario = models.CharField(max_length=10)
-    usuNombre = models.CharField(max_length=25)
+    usuNombre = models.CharField(max_length=25, unique=True)
     usuApellido = models.CharField(max_length=25)
     usuContrasena = models.CharField(max_length=10)
     usuCorreo = models.EmailField(max_length=35)
@@ -141,6 +141,26 @@ class Venta(models.Model):
     class Meta:
         db_table = 'venta'
 
-    def __str__(self):
-        return f"Venta {self.ventaId} - Cliente {self.clienteCedula}"
+        def __str__(self):
+            return f"Venta {self.ventaId} - Cliente {self.clienteCedula}"
+    
+    class Equipo(models.Model):
+        ESTADO_CHOICES = [
+            ('Pendiente', 'Pendiente'),
+            ('En Proceso', 'En Proceso'),
+            ('Completado', 'Completado'),
+        ]
+        equipoId = models.AutoField(primary_key=True)
+        equipoRef = models.CharField(max_length=30)
+        equipoNovedad = models.CharField(max_length=300)
+        equipoFecha = models.DateField(auto_now_add=True)
+        clienteNombre = models.ForeignKey('Cliente', to_field='clienteNombre', on_delete=models.CASCADE, db_column='clienteNombre')
+        usuNombre = models.ForeignKey('Usuario', to_field='usuNombre', on_delete=models.CASCADE, db_column='usuNombre')
+        equipoEstado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
+    
+        class Meta:
+            db_table = 'equipo'
+    
+        def __str__(self):
+            return f"Equipo {self.equipoId} - {self.equipoRef} - Estado: {self.equipoEstado}"
     

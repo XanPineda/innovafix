@@ -1,16 +1,63 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Reporte de Ingresos</title>
     <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
-        th { background: #eee; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #525252;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 6px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #229799;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
-    <h2>Reporte de Ingresos</h2>
+    <div class="header">
+             <img src="http://127.0.0.1:8000/static/logoCompleto.png" alt="Logo InnovaFix" style="width:120px; display:block; margin:auto; margin-bottom:10px;">
+
+        <div class="title">Reporte de ingresos </div>
+    </div>
+
     <table>
         <thead>
             <tr>

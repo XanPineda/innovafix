@@ -8,8 +8,15 @@
 }
 
 body {
-	background: linear-gradient(90deg, #48CFBC, #FDE74C);		
+    background: linear-gradient(90deg, #48CFBC, #FDE74C);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 
 .container {
 	display: flex;
@@ -19,18 +26,22 @@ body {
 	
 }
 
-.screen {		
-	background: linear-gradient(90deg, #FDE74C, #FDE74C);		
-	position: relative;	
-	height: 350px;
-	width: 600px;	
-	box-shadow: 50px 80px 24px #FDE74C;
+.screen {
+    width: 90vw;
+    max-width: 900px;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: row;
+    border-radius: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    background-color: transparent;
 }
-
 .screen__content {
-	z-index: 1;
-	position: relative;	
-	height: 100%;
+    flex: 1;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .screen__background {		
@@ -214,7 +225,7 @@ F5F5F5;
 .screen {
     display: flex;
     flex-direction: row;
-    background: linear-gradient(90deg, #48CFBC, #229799);
+    background: linear-gradient(90deg, #48CFBC, #48CFBC);
     position: relative;
     height: 500px;
     width: 900px;
@@ -226,24 +237,23 @@ F5F5F5;
 }
 
 .login-image {
-    width: 600px;
+    flex: 1;
+    max-width: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
     overflow: hidden;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
 }
 
 .login-image img {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
+    border-radius: inherit;
 }
-.screen__content {
+reen__content {
     flex: 1;
     z-index: 1;
     position: relative;
@@ -311,8 +321,7 @@ F5F5F5;
 }
 
 .top-btn:hover {
-    background: #229799;
-    color: #fff;
+    background: #48CFBC;
 }
 /* ...código existente... */
 

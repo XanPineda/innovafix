@@ -55,7 +55,9 @@
                 <td>
                     <form method="post" action="{% url 'rol_eliminar' rol.rolId %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        <button type="submit" class="btn btn-trash">
+                            <i class="fas fa-trash-alt me-2"></i> 
+                        </button>
                     </form>
                 </td>
             </tr>

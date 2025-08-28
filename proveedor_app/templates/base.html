@@ -4,76 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Gestión{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="{% static 'logo_innovafix.png' %}">
-    <style>
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Orbitron:wght@400..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Orbitron:wght@400..900&display=swap');
 
-body {
-    min-height: 100vh;
-    display: flex;
-    font-family: 'Afacad', sans-serif;
-}
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    background: linear-gradient(180deg, #48CFBC, #FDE74C);
-    box-shadow: 2px 0 8px #22979922;
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 1030;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem 1rem;
-}
-.sidebar .logo-innova {
-    display: block;
-    margin: 0 auto 2rem auto;
-    max-width: 170px;
-    height: auto;
-}
-.sidebar .nav-link {
-    color: #525252;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 500;
-    margin-bottom: .5rem;
-}
-.sidebar .nav-link.active, .sidebar .nav-link:hover {
-    background: #FDE74C;
-    color: #229799;
-    border-radius: 8px;
-}
-.sidebar .btn-logout {
-    background: #229799;
-    color: #fff;
-    border-radius: 20px;
-    border: none;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 600;
-    padding: 6px 18px;
-    margin-top: auto;
-    transition: background 0.2s;
-}
-.sidebar .btn-logout:hover {
-    background: #525252;
-    color: #FDE74C;
-}
-.content {
-    margin-left: 220px;
-    padding: 2rem 1rem 1rem 1rem;
-    width: 100%;
-}
-.collapse .nav-link {
-    margin-bottom: 0 !important;
-}
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Orbitron:wght@400..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
     </style>
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{% static 'tablas/usuario.css' %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'logoCompleto.png' %}">
 </head>
 <body>
     {% if user.is_authenticated %}
     <nav class="sidebar">
         <a href="/">
-            <img src="{% static 'logo_innovafix.png' %}" alt="InnovaFix Logo" class="logo-innova">
+            <img src="{% static 'logoCompleto.png' %}" alt="InnovaFix Logo" class="logo-innova">
         </a>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item"><a class="nav-link" href="{% url 'proveedor_listar' %}">Proveedores</a></li>
@@ -83,6 +37,7 @@ body {
             <li class="nav-item"><a class="nav-link" href="{% url 'rol_listar' %}">Rol</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'venta_listar' %}">Venta</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'cliente_listar' %}">Cliente</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Mantenimiento de Equipos</a></li>
             <li>
               <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#reportesMenu" role="button" aria-expanded="false" aria-controls="reportesMenu">
                 Reportes
@@ -98,21 +53,19 @@ body {
         </ul>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button class="btn btn-logout w-100">Cerrar sesión</button>
+            <button class="btn btn-logout w-100">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión
+            </button>
         </form>
-        {% endif %}
     </nav>
+    {% endif %}
+
     <div class="content">
         {% block content %}
         {% endblock %}
-        {% if user.is_authenticated %}
-          <form action="{% url 'logout' %}" method="post" class="d-inline">
-            {% csrf_token %}
-          </form>
-        {% endif %}
     </div>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block scripts %}
-    {% endblock %}
 </body>
 </html>

@@ -63,9 +63,9 @@
                 <td>{{ producto.ingresoId }}</td>
                 <td>
                     <form method="post" action="{% url 'producto_eliminar' producto.productoId %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                    </form>
+                      <button type="submit" class="btn btn-trash">
+                          <i class="fas fa-trash-alt me-2"></i> 
+                      </button>
                 </td>
             </tr>
             {% empty %}

@@ -141,11 +141,21 @@
             bottom: 0;
         }
     }
+    registro-button {
+        background-color: #FDE74C;
+        color: #000;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
 </style>
 <div class="registro-bg">
     <div class="registro-unificado">
         <div class="registro-form-container">
-            <img src="{% static 'logo_innovafix.png' %}" alt="Logo InnovaFix" class="registro-logo">
+            <img src="{% static 'logoCompleto.png' %}" alt="Logo InnovaFix" class="registro-logo">
             <h2 class="mb-3 text-center">Crear Cuenta</h2>
 
             {% if form.errors %}

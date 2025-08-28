@@ -81,7 +81,9 @@
                 <td>
                     <form method="post" action="{% url 'venta_eliminar' venta.ventaId %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        <button type="submit" class="btn btn-trash">
+                            <i class="fas fa-trash-alt me-2"></i> 
+                        </button>
                     </form>
                 </td>
             </tr>

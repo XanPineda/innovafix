@@ -7,10 +7,34 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #333; padding: 4px; font-size: 12px; }
         th { background: #eee; }
+                .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+                .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+                .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #525252;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-    <h2>Reporte de Ventas</h2>
+    <div class="header">
+             <img src="http://127.0.0.1:8000/static/logoCompleto.png" alt="Logo InnovaFix" style="width:120px; display:block; margin:auto; margin-bottom:10px;">
+
+        <div class="title">Reporte de ventas </div>
+    </div>
     <table>
         <thead>
             <tr>

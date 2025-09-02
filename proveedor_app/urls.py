@@ -50,6 +50,10 @@ urlpatterns = [
     path('clientes/', views.cliente_listar, name='cliente_listar'),
     path('cliente/eliminar/<str:clienteCedula>/', views.cliente_eliminar, name='cliente_eliminar'),
 
+    #Equipo
+    path('equipos/', views.equipo_listar, name='equipo_listar'),
+    path('equipos/eliminar/<int:pk>/', views.equipo_eliminar, name='equipo_eliminar'),
+
     #vistas de reportes
     path('reportes/vista_ingreso_info/', views.vista_ingreso_info_listar, name='vista_ingreso_info_listar'),
     path('reportes/vista_compra_venta/', views.vista_compra_venta_listar, name='vista_compra_venta_listar'),

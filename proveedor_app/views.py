@@ -4,8 +4,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
-from .models import Rol, Proveedor, Cliente, Usuario, Ingreso, Producto, Venta, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso
-from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm
+from .models import Rol, Proveedor, Cliente, Usuario, Ingreso, Producto, Venta, Equipo, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso
+from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm, EquipoForm
 from django.contrib import messages
 
 # RENDERIZADO DE HOME PAGE
@@ -492,6 +492,29 @@ def venta_eliminar(request, ventaId):
     venta = get_object_or_404(Venta, ventaId=ventaId)
     venta.delete()
     return redirect('venta_listar')
+
+
+#----------------------------
+#VISTA DE EQUIPOS
+#-----------------------------
+
+@login_required
+def equipo_listar(request):
+    equipos = Equipo.objects.all()
+    form = EquipoForm()
+    if request.method == 'POST':
+        form = EquipoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('equipo_listar')
+    return render(request, 'proveedor/equipos/equipos.html', {'equipos': equipos, 'form': form})
+
+def equipo_eliminar(request, pk):
+    equipo = Equipo.objects.get(pk=pk)
+    if request.method == 'POST':
+        equipo.delete()
+        return redirect('equipo_listar')
+    
 
  # Exportar a Excel
 def exportar_ventas_excel(request):

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Listado de Ingresos</h2>
+
+    <a href="{% url 'ingreso_crear' %}" class="btn btn-primary mb-3">Nuevo Ingreso</a>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Proveedor</th>
+                <th>Usuario</th>
+                <th>Cantidad</th>
+                <th>Valor</th>
+                <th>Productos Asociados</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ingreso in ingresos %}
+            <tr>
+                <td>{{ ingreso.ingresoId }}</td>
+                <td>{{ ingreso.proveedorNit.proveedorNombre }}</td>
+                <td>{{ ingreso.usuCedula.first_name }} {{ ingreso.usuCedula.last_name }}</td>
+                <td>{{ ingreso.ingresoCantidad }}</td>
+                <td>{{ ingreso.ingresoValor }}</td>
+                <td>
+                    <ul>
+                        {% for producto in ingreso.producto_set.all %}
+                            <li>{{ producto.prodNombre }} ({{ producto.prodCantidad }})</li>
+                        {% empty %}
+                            <li>No hay productos asociados</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{% url 'ingreso_editar' ingreso.ingresoId %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'ingreso_eliminar' ingreso.ingresoId %}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No hay ingresos registrados</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

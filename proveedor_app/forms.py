@@ -1,6 +1,7 @@
 from django import forms
-from .models import Proveedor, Ingreso, Usuario, Producto, Venta, Cliente, Rol, Equipo
+from .models import Cliente, Usuario, Proveedor, Ingreso, Producto, Venta, Rol, Equipo
 from django.core.exceptions import ValidationError
+from django.forms import inlineformset_factory
 
 class ProveedorForm(forms.ModelForm):
     class Meta:
@@ -25,26 +26,26 @@ class ProveedorForm(forms.ModelForm):
             'direccion': 'Ingrese la dirección del proveedor.',
         }
 
+
 class IngresoForm(forms.ModelForm):
     class Meta:
         model = Ingreso
-        fields = ['ingresoId','ingresoValor', 'ingresoCantidad', 'proveedorNit', 'usuCedula']
+        # Campos en el orden deseado
+        fields = ['usuCedula', 'proveedorNit', 'ingresoValor', 'ingresoCantidad']
+        # Labels más amigables
+        labels = {
+            'usuCedula': 'Nombre Usuario',
+            'proveedorNit': 'Proveedor',
+            'ingresoValor': 'Valor',
+            'ingresoCantidad': 'Cantidad',
+        }
         widgets = {
-            'ingresoId': forms.NumberInput(attrs={'class': 'form-control'}),
+            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
+            'proveedorNit': forms.Select(attrs={'class': 'form-control'}),
             'ingresoValor': forms.NumberInput(attrs={'class': 'form-control'}),
             'ingresoCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
-            'proveedorNit': forms.Select(attrs={'class': 'form-control'}),
-            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
         }
-        labels = {
-            'ingresoId': 'ID del Ingreso',
-            'ingresoValor': 'Valor del Ingreso',
-            'ingresoCantidad': 'Cantidad Ingresada',
-            'proveedorNit': 'Proveedor',
-            'usuario': 'Usuario que registra',
-        }
-
-
+        
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
@@ -79,7 +80,7 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = [
-            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido', 'rolId',
+            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido',
             'usuContrasena', 'usuCorreo', 'usuTelefono',
             'usuDireccion', 'usuFoto'
         ]
@@ -88,7 +89,6 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': forms.TextInput(attrs={'class': 'form-control'}),
             'usuNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'usuApellido': forms.TextInput(attrs={'class': 'form-control'}),
-            'rolId': forms.Select(attrs={'class': 'form-control'}),
             'usuContrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
             'usuCorreo': forms.EmailInput(attrs={'class': 'form-control'}),
             'usuTelefono': forms.TextInput(attrs={'class': 'form-control'}),
@@ -100,7 +100,6 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': 'Nombre de Usuario',
             'usuNombre': 'Nombre',
             'usuApellido': 'Apellido',
-            'rolId': 'Rol del Usuario',
             'usuContrasena': 'Contraseña',
             'usuCorreo': 'Correo Electrónico',
             'usuTelefono': 'Teléfono',
@@ -123,27 +122,21 @@ class RolForm (forms.ModelForm):
             'rolDescripcion': 'Descripción del Rol',
         }
 
-
-
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['productoId', 'productoNombre', 'productoPrecioUnidad', 'productoCantidad', 'productoDescripcion', 'ingreso']
+        exclude = ['productoId', 'ingreso']
+        labels = {
+            'productoNombre': 'Nombre del Producto',
+            'productoPrecioUnidad': 'Precio Unitario',
+            'productoCantidad': 'Cantidad',
+            'productoDescripcion': 'Descripción',
+        }
         widgets = {
-            'productoId': forms.TextInput(attrs={'class': 'form-control'}),
             'productoNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'productoPrecioUnidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
-            'productoDescripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'ingreso': forms.Select(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'productoId': 'ID del Producto',
-            'productoNombre': 'Nombre del Producto',
-            'productoPrecioUnidad': 'Precio por Unidad',
-            'productoCantidad': 'Cantidad',
-            'productoDescripcion': 'Descripción',
-            'ingreso': 'Ingreso asociado',
+            'productoDescripcion': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
 class VentaForm(forms.ModelForm):
@@ -184,13 +177,14 @@ class VentaForm(forms.ModelForm):
 class EquipoForm(forms.ModelForm):
     class Meta:
         model = Equipo
-        fields = [
-            'equipoRef',
-            'equipoNovedad',
-            'clienteNombre',
-            'usuNombre',
-            'equipoEstado'
-        ]
+        fields = ['equipoRef', 'equipoNovedad', 'clienteNombre', 'usuNombre', 'equipoEstado']
+        labels = {
+            'equipoRef': 'Referencia del Equipo',
+            'equipoNovedad': 'Novedad del Equipo',
+            'clienteNombre': 'Cliente',
+            'usuNombre': 'Usuario',
+            'equipoEstado': 'Estado',
+        }
         widgets = {
             'equipoRef': forms.TextInput(attrs={'class': 'form-control'}),
             'equipoNovedad': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
@@ -198,11 +192,12 @@ class EquipoForm(forms.ModelForm):
             'usuNombre': forms.Select(attrs={'class': 'form-control'}),
             'equipoEstado': forms.Select(attrs={'class': 'form-control'}),
         }
-        labels = {
-            'equipoRef': 'Referencia del Equipo',
-            'equipoNovedad': 'Novedad del Equipo',
-            'clienteNombre': 'Dueño del Equipo',
-            'usuNombre': 'Usuario que registra',
-            'equipoEstado': 'Estado del Equipo',
-        }
 
+# Formset para Productos asociados al Ingreso
+ProductoFormSet = inlineformset_factory(
+    Ingreso,
+    Producto,
+    form=ProductoForm,
+    extra=0,         
+    can_delete=True  
+)

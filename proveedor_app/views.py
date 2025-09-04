@@ -1,23 +1,44 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.forms import inlineformset_factory
 from django.contrib.auth.models import User
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
-from .models import Rol, Proveedor, Cliente, Usuario, Ingreso, Producto, Venta, Equipo, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso
-from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm, EquipoForm
 from django.contrib import messages
-from collections import Counter
+from django.template.loader import render_to_string
+from .forms import IngresoForm, ProductoFormSet
+from .models import (
+    Ingreso, Producto, Venta, Cliente, Usuario, Proveedor,
+    Rol, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso, Equipo
+)
+from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm, EquipoForm
 
-# RENDERIZADO DE HOME PAGE
+# -------------------------------
+# HOME PAGE
+# -------------------------------
 def homepage(request):
     return render(request, 'homepage.html')
 
-
-# RENDERIZADO DE INICIO
+# -------------------------------
+# INICIO (requiere login)
+# -------------------------------
 @login_required
 def inicio(request):
-    return render(request, 'inicio.html')  
+    return render(request, 'inicio.html')
+
+# -------------------------------
+# LOGIN PERSONALIZADO
+# Redirige a inicio si ya está logueado
+# -------------------------------
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('inicio')
+        return super().dispatch(request, *args, **kwargs)
 
 #----------------------------
 #VISTA 
@@ -317,17 +338,10 @@ def usuario_listar(request):
 
     usuarios = Usuario.objects.all()
     usuarios_django = User.objects.all()
-    usuarios_count = usuarios.count()
-    roles = Rol.objects.all()
-    labels = [rol.rolNombre for rol in roles]
-    data = [usuarios.filter(rolId=rol).count() for rol in roles]
     return render(request, 'proveedor/usuario/usuario.html', {
         'form': form,
         'usuarios': usuarios,
-        'usuarios_django': usuarios_django,
-        'usuarios_count': usuarios_count,
-        'roles_labels': labels,
-        'roles_data': data,
+        'usuarios_django': usuarios_django
     })
 
 @login_required
@@ -336,51 +350,90 @@ def usuario_eliminar(request, usuCedula):
     usuario = get_object_or_404(Usuario, usuCedula=usuCedula)
     usuario.delete()
     return redirect('usuario_listar')
-    
-#----------------------------
-#VISTA DE INGRESO
-#-----------------------------
 
-@login_required
+# ==============================
+# LISTAR INGRESOS
+# ==============================
 def ingreso_listar(request):
+    """
+    Muestra la lista de ingresos y prepara un form y formset para el modal de creación.
+    """
+    ProductoFormSet = inlineformset_factory(Ingreso, Producto, form=ProductoForm, extra=1, can_delete=True)
+    form = IngresoForm()
+    formset = ProductoFormSet()
+
+    ingresos = Ingreso.objects.all().select_related('proveedorNit', 'usuCedula')
+    
+    return render(request, 'proveedor/ingreso/ingreso.html', {
+        'ingresos': ingresos,
+        'form': form,
+        'formset': formset
+    })
+
+
+# ==============================
+# CREAR INGRESO + PRODUCTOS
+# ==============================
+def ingreso_crear(request):
+    ProductoFormSet = inlineformset_factory(Ingreso, Producto, form=ProductoForm, extra=1, can_delete=True)
+
     if request.method == 'POST':
+        print("Formulario recibido")
         form = IngresoForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('ingreso_listar')
+            ingreso = form.save()
+            formset = ProductoFormSet(request.POST, instance=ingreso)
+            if formset.is_valid():
+                formset.save()
+                messages.success(request, "✅ El ingreso fue registrado correctamente.")
+                return redirect('ingreso_listar')
+            else:
+                print("Errores del formset:", formset.errors)
+        else:
+            print("Errores del formulario:", form.errors)
     else:
         form = IngresoForm()
+        formset = ProductoFormSet()
 
-    ingresos = Ingreso.objects.select_related('proveedorNit', 'usuCedula').all()
-    # Usamos select_related para optimizar las consultas a la base de datos
-    return render(request, 'proveedor/ingreso/ingreso.html', {
-        'form': form,
-        'ingresos': ingresos
-    })
+    return render(request, 'proveedor/ingreso/ingreso_form.html', {'form': form, 'formset': formset})
 
-@login_required
-@require_POST
-def ingreso_eliminar(request, id):
-    ingreso = get_object_or_404(Ingreso, ingresoId=id)
-    ingreso.delete()
-    return redirect('ingreso_listar')
-
+# ==============================
+# EDITAR INGRESO + PRODUCTOS
+# ==============================
 def ingreso_editar(request, id):
     ingreso = get_object_or_404(Ingreso, ingresoId=id)
-    if request.method == 'POST':
+
+    if request.method == "POST":
         form = IngresoForm(request.POST, instance=ingreso)
-        if form.is_valid():
+        formset = ProductoFormSet(request.POST, instance=ingreso)
+
+        if form.is_valid() and formset.is_valid():
             form.save()
-            return redirect('ingreso_listar')
+            formset.save()  # Esto guarda todos los productos del formset
+            return redirect("ingreso_listar")
+
     else:
         form = IngresoForm(instance=ingreso)
+        formset = ProductoFormSet(instance=ingreso)
 
-    return render(request, 'proveedor/ingreso/ingreso.html', {
-        'form': form,
-        'ingreso': ingreso
+    return render(request, 'proveedor/ingreso/ingreso_editar.html', {
+        "form": form,
+        "formset": formset,
     })
+# ==============================
+# ELIMINAR INGRESO
+# ==============================
+def ingreso_eliminar(request, id):
+    """
+    Elimina un ingreso y todos sus productos asociados.
+    """
+    ingreso = get_object_or_404(Ingreso, pk=id)
+    if request.method == 'POST':
+        ingreso.delete()
+        return redirect('ingreso_listar')
+    ingresos = Ingreso.objects.all().select_related('proveedorNit', 'usuCedula').prefetch_related('producto_set')
+    return render(request, 'proveedor/ingreso/ingreso_listar.html', {'ingresos': ingresos})
 
- # Exportar a Excel
 def exportar_ingresos_excel(request):
     from django.http import HttpResponse
     import pandas as pd
@@ -419,7 +472,12 @@ def exportar_ingresos_pdf(request):
     context = {
         'ingresos': ingresos,
         }
-    html = template.render(context)
+    html = template.render(context)    @login_required
+    def ingreso_listar(request):
+        ingresos = Ingreso.objects.all()
+        return render(request, 'proveedor/ingreso/ingreso_listar.html', {
+            'ingresos': ingresos
+        })
     # Crear la respuesta HTTP
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="ingresos.pdf"'
@@ -437,32 +495,13 @@ from django.db import IntegrityError
 
 @login_required
 def producto_listar(request):
-    from .forms import ProductoForm
     productos = Producto.objects.all()
-    error_id = False
-    success = False
-
-    if request.method == 'POST':
-        form = ProductoForm(request.POST)
-        if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, 'Producto guardado exitosamente.')
-                form = ProductoForm()  # Limpia el formulario después de guardar
-            except IntegrityError:
-                error_id = True
-        else:
-            # Detecta si el error es por ID duplicado
-            if 'productoId' in form.errors and any('already exists' in e for e in form.errors['productoId']):
-                error_id = True
-    else:
-        form = ProductoForm()
     return render(request, 'proveedor/producto/producto.html', {
-        'form': form,
-        'productos': productos,
-        'error_id': error_id,
-        'success': success
+        'productos': productos
     })
+#----------------------------
+#ELIMINAR PRODUCTO
+#-----------------------------
 @login_required
 @require_POST
 def producto_eliminar(request, producto_id):
@@ -500,29 +539,6 @@ def venta_eliminar(request, ventaId):
     venta = get_object_or_404(Venta, ventaId=ventaId)
     venta.delete()
     return redirect('venta_listar')
-
-
-#----------------------------
-#VISTA DE EQUIPOS
-#-----------------------------
-
-@login_required
-def equipo_listar(request):
-    equipos = Equipo.objects.all()
-    form = EquipoForm()
-    if request.method == 'POST':
-        form = EquipoForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('equipo_listar')
-    return render(request, 'proveedor/equipos/equipos.html', {'equipos': equipos, 'form': form})
-
-def equipo_eliminar(request, pk):
-    equipo = Equipo.objects.get(pk=pk)
-    if request.method == 'POST':
-        equipo.delete()
-        return redirect('equipo_listar')
-    
 
  # Exportar a Excel
 def exportar_ventas_excel(request):
@@ -579,3 +595,26 @@ def exportar_ventas_pdf(request):
     if pisa_status.err:
         return HttpResponse('Error al generar el PDF')
     return response
+
+#----------------------------
+#VISTA DE EQUIPOS
+#-----------------------------
+
+@login_required
+def equipo_listar(request):
+    equipos = Equipo.objects.all()
+    form = EquipoForm()
+    if request.method == 'POST':
+        form = EquipoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('equipo_listar')  # <-- cerrado correctamente
+    return render(request, 'proveedor/equipos/equipos.html', {'equipos': equipos, 'form': form})
+
+@login_required
+@require_POST
+def equipo_eliminar(request, pk):
+    equipo = Equipo.objects.get(pk=pk)
+    if request.method == 'POST':
+        equipo.delete()
+        return redirect('equipo_listar')

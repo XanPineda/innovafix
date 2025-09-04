@@ -1,112 +1,194 @@
 {% extends "base.html" %}
+{% load static %}
+{% load humanize %}
 
 {% block content %}
 <div class="container py-5">
+
     <h1 class="mb-4">Gestión de Ingresos</h1>
 
-    <!-- Campo de búsqueda y botón de filtrar -->
+    <!-- Campo de búsqueda -->
     <div class="input-group mb-3">
         <input type="text" id="busquedaIngreso" class="form-control" placeholder="Buscar ingreso...">
     </div>
 
     <!-- Botón para abrir el modal -->
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#ingresoModal">
-      Agregar Ingreso
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalIngreso">
+        Agregar Ingreso
     </button>
 
-    <!-- Botón para exportar a Excel -->
-    <a href="{% url 'exportar_ingresos_excel' %}" class="btn btn-success mb-3">
-      Exportar a Excel
-    </a>
-    <!-- Botón para exportar a PDF -->
-    <a href="{% url 'exportar_ingresos_pdf' %}" class="btn btn-danger mb-3">
-      Exportar a PDF
-    </a>
+    <!-- Botones de exportar -->
+    <a href="{% url 'exportar_ingresos_excel' %}" class="btn btn-success mb-3">Exportar a Excel</a>
+    <a href="{% url 'exportar_ingresos_pdf' %}" class="btn btn-danger mb-3">Exportar a PDF</a>
 
-    <!-- Modal con el formulario -->
-    <div class="modal fade" id="ingresoModal" tabindex="-1" aria-labelledby="ingresoModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <form method="post" enctype="multipart/form-data" action="{% url 'ingreso_listar' %}">
-            {% csrf_token %}
-            <div class="modal-header">
-              <h5 class="modal-title" id="ingresoModalLabel">Agregar Ingreso</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-              {% for field in form %}
-                <div class="mb-3">
-                  {{ field.label_tag }}
-                  {{ field }}
-                  {% for error in field.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                  {% endfor %}
+    <!-- Modal para crear ingreso -->
+    <div class="modal fade" id="modalIngreso" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Agregar Ingreso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-              {% endfor %}
+                <div class="modal-body">
+                    <form method="post" action="{% url 'ingreso_crear' %}">
+                        {% csrf_token %}
+
+                        <!-- Campos principales del ingreso -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre Usuario</label>
+                                {{ form.usuCedula }}
+                                {% if form.usuCedula.errors %}
+                                    <div class="text-danger">{{ form.usuCedula.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Proveedor</label>
+                                {{ form.proveedorNit }}
+                                {% if form.proveedorNit.errors %}
+                                    <div class="text-danger">{{ form.proveedorNit.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Valor</label>
+                                {{ form.ingresoValor }}
+                                {% if form.ingresoValor.errors %}
+                                    <div class="text-danger">{{ form.ingresoValor.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Cantidad</label>
+                                {{ form.ingresoCantidad }}
+                                {% if form.ingresoCantidad.errors %}
+                                    <div class="text-danger">{{ form.ingresoCantidad.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Productos asociados -->
+                        <h5 class="mb-3">Productos asociados</h5>
+                        {{ formset.management_form }}
+                        <table class="table table-bordered" id="formset-table">
+                            <thead>
+                                <tr>
+                                    {% if formset.forms %}
+                                        {% for field in formset.forms.0.visible_fields %}
+                                            <th>{{ field.label }}</th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody id="formset-container">
+                                {% for f in formset.forms %}
+                                <tr>
+                                    {% for field in f.visible_fields %}
+                                    <td>{{ field }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <button type="button" class="btn btn-secondary mb-3" id="add-product">
+                            <i class="bi bi-plus"></i> Agregar Producto
+                        </button>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save"></i> Guardar Ingreso
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn btn-success">Guardar Ingreso</button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
 
     <hr>
 
-    <h2>Lista de Ingresos</h2>
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Valor</th>
-                <th>Cantidad</th>
-                <th>Proveedor</th>
-                <th>Usuario</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="tablaIngresos">
-            {% for ingreso in ingresos %}
-            <tr>
-                <td>{{ ingreso.ingresoId }}</td>
-                <td>{{ ingreso.ingresoValor }}</td>
-                <td>{{ ingreso.ingresoCantidad }}</td>
-                <td>{{ ingreso.proveedorNit }}</td>
-                <td>{{ ingreso.usuCedula.usuNombre }}</td>
-                <td>
-                    <form method="post" action="{% url 'ingreso_eliminar' ingreso.ingresoId %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-trash">
-                            <i class="fas fa-trash-alt me-2"></i> 
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center">No hay ingresos registrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Lista de ingresos -->
+    <h2>Ingresos Registrados</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Proveedor</th>
+                    <th>Valor</th>
+                    <th>Cantidad</th>
+                    <th>Productos Asociados</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaIngresos">
+                {% for ingreso in ingresos %}
+                <tr>
+                    <td>{{ ingreso.ingresoId }}</td>
+                    <td>{{ ingreso.usuCedula.usuNombre }} {{ ingreso.usuCedula.usuApellido }}</td>
+                    <td>{{ ingreso.proveedorNit.nombre }}</td>
+                    <td>${{ ingreso.ingresoValor|floatformat:2|intcomma }}</td>
+                    <td>{{ ingreso.ingresoCantidad }}</td>
+                    <td>
+                        <ul>
+                        {% for producto in ingreso.producto_set.all %}
+                            <li>{{ producto.productoNombre }} ({{ producto.productoCantidad }})</li>
+                        {% empty %}
+                            <li>No hay productos asociados</li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <a href="{% url 'ingreso_editar' ingreso.ingresoId %}" class="btn btn-primary me-1">Editar</a>
+                        <form method="post" action="{% url 'ingreso_eliminar' ingreso.ingresoId %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No hay ingresos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
-{% load static %}
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Filtro de búsqueda
     var input = document.getElementById('busquedaIngreso');
-    var btnFiltrar = document.getElementById('btnFiltrarIngreso');
     function filtrarTabla() {
         var filtro = input.value.toLowerCase();
         document.querySelectorAll('#tablaIngresos tr').forEach(function(row) {
             row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
         });
     }
-    input.addEventListener('keyup', filtrarTabla); // Búsqueda en tiempo real
-    btnFiltrar.addEventListener('click', filtrarTabla); // Búsqueda al presionar el botón
+    input.addEventListener('keyup', filtrarTabla);
+
+    // Formset dinámico
+    const container = document.querySelector("#formset-container");
+    const addButton = document.querySelector("#add-product");
+    const totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+
+    addButton.addEventListener("click", function () {
+        const currentForms = container.children.length;
+        const regex = new RegExp(`form-(\\d+)-`, "g");
+        const newForm = container.children[0].cloneNode(true);
+
+        // Limpiar valores
+        newForm.querySelectorAll("input, select").forEach(i => i.value = "");
+        newForm.innerHTML = newForm.innerHTML.replace(regex, `form-${currentForms}-`);
+
+        container.appendChild(newForm);
+        totalForms.value = currentForms + 1;
+    });
 });
 </script>
 {% endblock %}

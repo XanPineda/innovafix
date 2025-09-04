@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class VistaIngresoInfo(models.Model):
     ingresoId = models.IntegerField(primary_key=True)
     ingresoValor = models.IntegerField()
@@ -91,15 +92,13 @@ class Ingreso(models.Model):
         db_table = 'ingreso'
 
     def __str__(self):
-        return f"{self.ingresoId} - {self.proveedorNit.proveedorNit} - {self.ingresoValor}"
-
+        return f"Ingreso {self.ingresoId} - Proveedor: {self.proveedorNit.nombre} - Valor: {self.ingresoValor:,}"
 
 class Usuario(models.Model):
     usuCedula = models.CharField(max_length=10, primary_key=True)
     usuUsuario = models.CharField(max_length=10)
     usuNombre = models.CharField(max_length=25, unique=True)
     usuApellido = models.CharField(max_length=25)
-    rolId = models.ForeignKey('Rol', to_field='rolId', on_delete=models.CASCADE, db_column='rolId', default=1)
     usuContrasena = models.CharField(max_length=10)
     usuCorreo = models.EmailField(max_length=35)
     usuTelefono = models.CharField(max_length=10)
@@ -116,13 +115,16 @@ class Usuario(models.Model):
 
 
 class Producto(models.Model):
-    productoId = models.CharField(max_length=10, primary_key=True)
+    productoId = models.AutoField(primary_key=True) #Ahora es auto incremental
     productoNombre = models.CharField(max_length=25)
-    productoPrecioUnidad = models.IntegerField()
+    productoPrecioUnidad = models.DecimalField(max_digits=12, decimal_places=2)
     productoCantidad = models.IntegerField()
     productoDescripcion = models.CharField(max_length=225)
-    ingreso = models.ForeignKey('Ingreso', on_delete=models.CASCADE, db_column='ingresoId')
-
+    ingreso = models.ForeignKey(
+        Ingreso,
+        on_delete=models.CASCADE,
+        db_column='ingresoId'  # <- Aquí pones el nombre real de la columna en la base de datos
+    )
     class Meta:
         db_table = 'producto'
 
@@ -147,21 +149,20 @@ class Venta(models.Model):
     
 class Equipo(models.Model):
     ESTADO_CHOICES = [
-            ('Pendiente', 'Pendiente'),
-            ('En Proceso', 'En Proceso'),
-            ('Completado', 'Completado'),
-        ]
+        ('Pendiente', 'Pendiente'),
+        ('En Proceso', 'En Proceso'),
+        ('Completado', 'Completado'),
+    ]
     equipoId = models.AutoField(primary_key=True)
     equipoRef = models.CharField(max_length=30)
     equipoNovedad = models.CharField(max_length=300)
     equipoFecha = models.DateField(auto_now_add=True)
-    clienteNombre = models.ForeignKey('Cliente', to_field='clienteNombre', on_delete=models.CASCADE, db_column='clienteNombre')
-    usuNombre = models.ForeignKey('Usuario', to_field='usuNombre', on_delete=models.CASCADE, db_column='usuNombre')
+    clienteNombre = models.ForeignKey(Cliente, to_field='clienteNombre', on_delete=models.CASCADE, db_column='clienteNombre')
+    usuNombre = models.ForeignKey(Usuario, to_field='usuNombre', on_delete=models.CASCADE, db_column='usuNombre')
     equipoEstado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
-    
+
     class Meta:
-            db_table = 'equipo'
-    
+        db_table = 'equipo'
+
     def __str__(self):
-            return f"Equipo {self.equipoId} - {self.equipoRef} - Estado: {self.equipoEstado}"
-    
+        return f"Equipo {self.equipoId} - {self.equipoRef} - Estado: {self.equipoEstado}"

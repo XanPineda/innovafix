@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Ingreso{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Editar Ingreso #{{ form.instance.ingresoId }}</h2>
+
+    <form method="POST" id="form-editar-ingreso">
+        {% csrf_token %}
+
+        <!-- ==============================
+             Campos principales del Ingreso
+        ============================== -->
+        <div class="row mb-3">
+            {% for field in form %}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <hr>
+
+        <!-- ==============================
+             Productos asociados (formset)
+        ============================== -->
+        <h5 class="mb-3">Productos asociados</h5>
+        {{ formset.management_form }}
+
+        <table class="table table-bordered table-striped" id="formset-table">
+            <thead>
+                <tr>
+                    {% if formset.forms %}
+                        {% for field in formset.forms.0.visible_fields %}
+                            <th>{{ field.label }}</th>
+                        {% endfor %}
+                        <th>Eliminar</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody id="formset-container">
+                {% for f in formset.forms %}
+                <tr class="producto-fila">
+                    {% for field in f.visible_fields %}
+                        <td>{{ field }}</td>
+                    {% endfor %}
+                    <td>{{ f.DELETE }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'ingreso_listar' %}" class="btn btn-outline-danger me-2">Cancelar</a>
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </div>
+    </form>
+</div>
+
+<!-- ==============================
+     Estilos
+============================== -->
+<style>
+.nuevo-producto {
+    animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+</style>
+
+<!-- ==============================
+     Validación y SweetAlert
+============================== -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-editar-ingreso");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let valid = true;
+
+        // Validar campos del ingreso
+        form.querySelectorAll("input[required], select[required], textarea[required]").forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add("is-invalid");
+                valid = false;
+            } else {
+                field.classList.remove("is-invalid");
+            }
+        });
+
+        // Validar campos del formset de productos
+        document.querySelectorAll("#formset-container input, #formset-container select, #formset-container textarea").forEach(field => {
+            if (field.hasAttribute("required") && !field.value.trim()) {
+                field.classList.add("is-invalid");
+                valid = false;
+            } else {
+                field.classList.remove("is-invalid");
+            }
+        });
+
+        if (!valid) {
+            Swal.fire({
+                icon: "error",
+                title: "Campos incompletos",
+                text: "Por favor completa todos los campos obligatorios antes de guardar."
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "¿Deseas guardar los cambios?",
+            text: "Esta acción actualizará el ingreso y sus productos.",
+            icon: "question",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            denyButtonText: "No guardar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit(); // Se envía el form y la vista redirige a ingreso_listar
+            } else if (result.isDenied) {
+                Swal.fire("Los cambios no fueron guardados", "", "info");
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

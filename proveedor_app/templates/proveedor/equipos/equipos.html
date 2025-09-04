@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Mantenimiento de Equipos</h1>
+    <div class="input-group mb-3">
+        <input type="text" id="busquedaEquipo" class="form-control" placeholder="Buscar equipo...">
+    </div>
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#equipoModal">
+      Agregar Equipo
+    </button>
+    <div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form method="post">
+            {% csrf_token %}
+            <div class="modal-header">
+              <h5 class="modal-title" id="equipoModalLabel">Agregar Equipo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              {% for field in form %}
+                <div class="mb-3">
+                  {{ field.label_tag }}
+                  {{ field }}
+                  {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-success">Guardar Equipo</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <h2>Lista de Equipos</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Referencia</th>
+                <th>Novedad</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Encargado del Equipo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaEquipo">
+            {% for equipo in equipos %}
+            <tr>
+                <td>{{ equipo.equipoId }}</td>
+                <td>{{ equipo.equipoRef }}</td>
+                <td>{{ equipo.equipoNovedad }}</td>
+                <td>{{ equipo.equipoFecha }}</td>
+                <td>{{ equipo.clienteNombre }}</td>
+                <td>{{ equipo.usuNombre }}</td>
+                <td>{{ equipo.equipoEstado }}</td>
+                <td>
+                    <form method="post" action="{% url 'equipo_eliminar' equipo.equipoId %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-trash">
+                          <i class="fas fa-trash-alt me-2"></i> 
+                      </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center">No hay equipos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('busquedaEquipo');
+    function filtrarTabla() {
+        var filtro = input.value.toLowerCase();
+        document.querySelectorAll('#tablaEquipo tr').forEach(function(row) {
+            row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+        });
+    }
+    input.addEventListener('keyup', filtrarTabla);
+});
+</script>
+{% endblock %}

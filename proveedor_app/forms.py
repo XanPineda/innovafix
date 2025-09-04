@@ -1,5 +1,5 @@
 from django import forms
-from .models import Proveedor, Ingreso, Usuario, Producto, Venta, Cliente, Rol
+from .models import Proveedor, Ingreso, Usuario, Producto, Venta, Cliente, Rol, Equipo
 from django.core.exceptions import ValidationError
 
 class ProveedorForm(forms.ModelForm):
@@ -79,7 +79,7 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = [
-            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido',
+            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido', 'rolId',
             'usuContrasena', 'usuCorreo', 'usuTelefono',
             'usuDireccion', 'usuFoto'
         ]
@@ -88,6 +88,7 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': forms.TextInput(attrs={'class': 'form-control'}),
             'usuNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'usuApellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'rolId': forms.Select(attrs={'class': 'form-control'}),
             'usuContrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
             'usuCorreo': forms.EmailInput(attrs={'class': 'form-control'}),
             'usuTelefono': forms.TextInput(attrs={'class': 'form-control'}),
@@ -99,6 +100,7 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': 'Nombre de Usuario',
             'usuNombre': 'Nombre',
             'usuApellido': 'Apellido',
+            'rolId': 'Rol del Usuario',
             'usuContrasena': 'Contraseña',
             'usuCorreo': 'Correo Electrónico',
             'usuTelefono': 'Teléfono',
@@ -177,5 +179,30 @@ class VentaForm(forms.ModelForm):
             'productoId': 'Producto',
             'clienteCedula': 'Cliente',
             'usuCedula': 'Usuario que registró la venta',
+        }
+
+class EquipoForm(forms.ModelForm):
+    class Meta:
+        model = Equipo
+        fields = [
+            'equipoRef',
+            'equipoNovedad',
+            'clienteNombre',
+            'usuNombre',
+            'equipoEstado'
+        ]
+        widgets = {
+            'equipoRef': forms.TextInput(attrs={'class': 'form-control'}),
+            'equipoNovedad': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'clienteNombre': forms.Select(attrs={'class': 'form-control'}),
+            'usuNombre': forms.Select(attrs={'class': 'form-control'}),
+            'equipoEstado': forms.Select(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'equipoRef': 'Referencia del Equipo',
+            'equipoNovedad': 'Novedad del Equipo',
+            'clienteNombre': 'Dueño del Equipo',
+            'usuNombre': 'Usuario que registra',
+            'equipoEstado': 'Estado del Equipo',
         }
 

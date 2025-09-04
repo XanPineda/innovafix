@@ -99,6 +99,7 @@ class Usuario(models.Model):
     usuUsuario = models.CharField(max_length=10)
     usuNombre = models.CharField(max_length=25, unique=True)
     usuApellido = models.CharField(max_length=25)
+    rolId = models.ForeignKey('Rol', to_field='rolId', on_delete=models.CASCADE, db_column='rolId', default=1)
     usuContrasena = models.CharField(max_length=10)
     usuCorreo = models.EmailField(max_length=35)
     usuTelefono = models.CharField(max_length=10)
@@ -144,23 +145,23 @@ class Venta(models.Model):
         def __str__(self):
             return f"Venta {self.ventaId} - Cliente {self.clienteCedula}"
     
-    class Equipo(models.Model):
-        ESTADO_CHOICES = [
+class Equipo(models.Model):
+    ESTADO_CHOICES = [
             ('Pendiente', 'Pendiente'),
             ('En Proceso', 'En Proceso'),
             ('Completado', 'Completado'),
         ]
-        equipoId = models.AutoField(primary_key=True)
-        equipoRef = models.CharField(max_length=30)
-        equipoNovedad = models.CharField(max_length=300)
-        equipoFecha = models.DateField(auto_now_add=True)
-        clienteNombre = models.ForeignKey('Cliente', to_field='clienteNombre', on_delete=models.CASCADE, db_column='clienteNombre')
-        usuNombre = models.ForeignKey('Usuario', to_field='usuNombre', on_delete=models.CASCADE, db_column='usuNombre')
-        equipoEstado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
+    equipoId = models.AutoField(primary_key=True)
+    equipoRef = models.CharField(max_length=30)
+    equipoNovedad = models.CharField(max_length=300)
+    equipoFecha = models.DateField(auto_now_add=True)
+    clienteNombre = models.ForeignKey('Cliente', to_field='clienteNombre', on_delete=models.CASCADE, db_column='clienteNombre')
+    usuNombre = models.ForeignKey('Usuario', to_field='usuNombre', on_delete=models.CASCADE, db_column='usuNombre')
+    equipoEstado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
     
-        class Meta:
+    class Meta:
             db_table = 'equipo'
     
-        def __str__(self):
+    def __str__(self):
             return f"Equipo {self.equipoId} - {self.equipoRef} - Estado: {self.equipoEstado}"
     

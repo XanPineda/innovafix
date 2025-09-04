@@ -115,7 +115,7 @@ class Usuario(models.Model):
 
 
 class Producto(models.Model):
-    productoId = models.AutoField(primary_key=True) #Ahora es auto incremental
+    productoId = models.CharField(max_length=10, primary_key=True)  
     productoNombre = models.CharField(max_length=25)
     productoPrecioUnidad = models.DecimalField(max_digits=12, decimal_places=2)
     productoCantidad = models.IntegerField()
@@ -123,7 +123,7 @@ class Producto(models.Model):
     ingreso = models.ForeignKey(
         Ingreso,
         on_delete=models.CASCADE,
-        db_column='ingresoId'  # <- Aquí pones el nombre real de la columna en la base de datos
+        db_column='ingresoId'  # ✅ nombre real de la columna en la base de datos
     )
     class Meta:
         db_table = 'producto'
@@ -145,7 +145,7 @@ class Venta(models.Model):
         db_table = 'venta'
 
         def __str__(self):
-            return f"Venta {self.ventaId} - Cliente {self.clienteCedula}"
+            return f"Venta {self.ventaId} - Cliente {self.clienteCedula} - Producto {self.productoId} usuario {self.usuCedula}"
     
 class Equipo(models.Model):
     ESTADO_CHOICES = [

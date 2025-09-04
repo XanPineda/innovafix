@@ -21,13 +21,13 @@
     <link rel="stylesheet" href="{% static 'tablas/usuario.css' %}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{% static 'logoCompleto.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'media/imagenesLogin/logotitulo.png' %}">
 </head>
 <body>
     {% if user.is_authenticated %}
     <nav class="sidebar">
         <a href="/">
-            <img src="{% static 'logoCompleto.png' %}" alt="InnovaFix Logo" class="logo-innova">
+            <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="InnovaFix Logo" class="logo-innova">
         </a>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item"><a class="nav-link" href="{% url 'proveedor_listar' %}">Proveedores</a></li>

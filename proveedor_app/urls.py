@@ -36,7 +36,8 @@ urlpatterns = [
     path('exportar_ingresos_pdf/', views.exportar_ingresos_pdf, name='exportar_ingresos_pdf'),
     # PRODUCTOS
     path('productos/', views.producto_listar, name='producto_listar'),
-    path('producto/eliminar/<int:producto_id>/', views.producto_eliminar, name='producto_eliminar'),
+    path('producto/eliminar/<str:producto_id>/', views.producto_eliminar, name='producto_eliminar'),
+
 
     # ROLES
     path('roles/', views.rol_listar, name='rol_listar'),

@@ -493,35 +493,101 @@ def exportar_ingresos_pdf(request):
 
 from django.db import IntegrityError
 
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Producto
+from .forms import ProductoForm
+
+# Generador automático de productoId
+def generar_producto_id():
+    ultimo = Producto.objects.order_by('-productoId').first()
+    if ultimo and str(ultimo.productoId).startswith('PRD'):
+        try:
+            numero = int(str(ultimo.productoId).replace('PRD', '')) + 1
+        except ValueError:
+            numero = 1
+    else:
+        numero = 1
+    return f"PRD{numero:03d}"
+
 @login_required
 def producto_listar(request):
+    error_id = False
+
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES)
+        if form.is_valid():
+            producto_obj = form.save(commit=False)
+            producto_obj.productoId = generar_producto_id()
+
+            # Verificar si ya existe un producto con ese ID
+            if Producto.objects.filter(productoId=producto_obj.productoId).exists():
+                error_id = True
+                messages.error(request, "❌ El ID del producto ya existe.")
+            else:
+                producto_obj.save()
+                messages.success(request, "✅ Producto registrado exitosamente.")
+                return redirect('producto_listar')
+        else:
+            messages.error(request, "❌ Formulario inválido. Revisa los campos.")
+    else:
+        form = ProductoForm()
+
     productos = Producto.objects.all()
     return render(request, 'proveedor/producto/producto.html', {
-        'productos': productos
+        'form': form,
+        'productos': productos,
+        'error_id': error_id
     })
+
 #----------------------------
-#ELIMINAR PRODUCTO
+# ELIMINAR PRODUCTO
 #-----------------------------
 @login_required
 @require_POST
 def producto_eliminar(request, producto_id):
     producto = get_object_or_404(Producto, productoId=producto_id)
     producto.delete()
+    messages.success(request, "✅ Producto eliminado correctamente.")
     return redirect('producto_listar')
 
 #----------------------------
 #VISTA DE VENTA
 #-----------------------------
 
+def generar_venta_id():
+# Función para generar un ID único con formato VNT001, VNT002, etc.
+    def generar_venta_id():
+        ultimo = Venta.objects.order_by('-ventaId').first()
+        if ultimo and ultimo.ventaId.startswith('VNT'):
+            try:
+                numero = int(ultimo.ventaId.replace('VNT', '')) + 1
+            except ValueError:
+                numero = 1
+        else:
+         numero = 1
+        return f"VNT{numero:03d}"
+
 @login_required
 def venta_listar(request):
     if request.method == 'POST':
         form = VentaForm(request.POST, request.FILES)
         if form.is_valid():
-            venta_obj = form.save(commit=False)
-            venta_obj.venta = request.user
-            venta_obj.save()
-            return redirect('venta_listar')
+            try:
+                usuario_actual = Usuario.objects.get(usuario=request.user)
+                venta_obj = form.save(commit=False)
+                venta_obj.usuCedula = usuario_actual
+                venta_obj.ventaId = generar_venta_id()
+                venta_obj.save()
+                messages.success(request, "✅ Venta registrada exitosamente.")
+                return redirect('venta_listar')
+            except Usuario.DoesNotExist:
+                messages.error(request, "❌ No se encontró el usuario asociado.")
+        else:
+            messages.error(request, "❌ Formulario inválido. Revisa los campos.")
+            print(form.errors)  # Para depuración en consola
     else:
         form = VentaForm()
 
@@ -529,8 +595,6 @@ def venta_listar(request):
     return render(request, 'proveedor/venta/venta.html', {
         'form': form,
         'ventas': ventas
-
-
     })
 
 @login_required

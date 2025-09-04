@@ -2,84 +2,153 @@
 {% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InnovaFix - Homepage</title>
-    <link rel="stylesheet" href="{% static 'homepage/styles.css' %}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InnovaFix - Homepage</title>
+  <link rel="stylesheet" href="{% static 'homepage/styles.css' %}" />
 </head>
 <body>
-    
-    <!-- Header - Menu-->
 
-    <header>
-        <div class="container_header">
-            <div class="logo">
-                <a href=#>
-                    <img src="{% static 'media/imagenesHomepage/logotitulo.png' %}" alt="">
-                </a>
-            </div>
+  <!-- Header - Menu -->
+  <header>
+    <div class="container_header">
+      <div class="logo">
+        <a href="#">
+          <img src="{% static 'media/imagenesHomepage/logotitulo.png' %}" alt="Logo InnovaFix" />
+        </a>
+      </div>
 
-            <div class="menu">
-                <nav>
-                    <ul>
-                        <li><a href="#inicio">Home</a></li>
-                        <li><a href="#servicios">Nuestros Servicios</a></li>
-                        <li><a href="#">Contactanos</a></li>
-                    </ul>
-                </nav>
+      <div class="menu">
+        <nav>
+          <ul class="menu-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#inventario">Gestión</a></li>
+            <li><a href="#atencion">Atención</a></li>
+            <li><a href="#soporte">Soporte</a></li>
+            <li><a href="#contacto">Contáctanos</a></li>
+          </ul>
+        </nav>
 
-                <a href="{% url 'login' %}" class="btn_access">Ingresar</a>
-            </div>
-        </div>
-    </header>
+        <a href="{% url 'login' %}" class="boton-estandar boton-amarillo">Ingresar</a>
+      </div>
+    </div>
+  </header>
 
-    <main>
+  <main>
 
-        <!--INICIO-->
-        <!--Portada de inicio-->
-        <div class="container_cover div_offset" id="inicio">
-            <div class="cover">
-                <section class="text_cover">
-                    <h1>LA HERRAMIENTA QUE <span>INNOVARÁ</span> Y OPTIMIZARA TODOS TUS PROCESOS CORPORATIVOS</h1>
-                    <p>InnovaFix es la solución perfecta para optimizar la gestión de inventarios y mejorar la atención al cliente. Con nuestra herramienta, transformarás tus procesos corporativos y potenciarás el éxito de tu negocio. ¡Descubre un nuevo nivel de eficiencia!</p>
-                    <a href="#" class="btn_read-more">Leer más</a>
-                </section>
-                <section class="image_cover">
-                    <img src="{% static 'media/imagenesHomepage/portadaimg.png' %}" alt="">
-                </section>
-            </div>
-        </div>
+    <!-- Portada de inicio -->
+    <div class="container_cover div_offset" id="inicio">
+      <div class="cover">
+        <section class="text_cover">
+          <h1>
+            LA HERRAMIENTA QUE <span>INNOVARÁ</span> Y OPTIMIZARÁ TODOS TUS PROCESOS CORPORATIVOS
+          </h1>
+          <p class="parrafo inicio">
+            InnovaFix es la solución perfecta para optimizar la gestión de inventarios y mejorar la atención al cliente. Con nuestra herramienta, transformarás tus procesos corporativos y potenciarás el éxito de tu negocio. ¡Descubre un nuevo nivel de eficiencia!
+          </p >
+          <a href="#nosotros" class="boton-estandar">Leer más</a>
+        </section>
+        <section class="image_cover">
+          <img src="{% static 'media/imagenesHomepage/portada homepage.png' %}" alt="Imagen portada" />
+        </section>
+      </div>
+    </div>
 
-        <!-- Generador de confianza-->
+    <!-- Secciones de servicios -->
+    <section class="servicio" id="inventario">
+      <div class="contenido_servicio">
+        <h2>Gestión de Inventario</h2>
+        <img src="{% static 'media/imagenesHomepage/gestion de inventario.jpg' %}" alt="Gestión de Inventario" />
+        <p>
+          En InnovaFix, entendemos que una gestión de inventario eficiente es el pilar fundamental para la operación fluida de cualquier empresa. Nuestro sistema permite controlar en tiempo real el flujo de productos, optimizar los niveles de stock y reducir pérdidas operativas mediante análisis predictivos y trazabilidad inteligente.
+        </p>
+      </div>
+    </section>
 
-        <div class="container_trust container_card-primary" id="servicios">
-                <div class="text_trust text_card-primary">
-                    <h1>Nuestros Servicios</h1>
-                </div>
-            <div class="trust card_primary">
-                <div class="container_trust container_box-cardPrimary">
-                     <div class="card_trust box_card-primary">
-                        <img src="{% static 'media/imagenesHomepage/gestioninv.png' %}" alt="">
-                        <h2>Gestión de Inventario</h2>
-                     </div>
-                </div>
-                <div class="container_trust container_box-cardPrimary">
-                    <div class="card_trust box_card-primary">
-                       <img src="{% static 'media/imagenesHomepage/atencioncliente.png' %}" alt="">
-                       <h2>Atención al Cliente</h2>
-                    </div>
-               </div>
-               <div class="container_trust container_box-cardPrimary">
-                <div class="card_trust box_card-primary">
-                   <img src="{% static 'media/imagenesHomepage/tiendavirtual.png' %}" alt="">
-                   <h2>Tienda Virtual</h2>
-                </div>
-           </div>
-           <div class="container_trust container_box-cardPrimary">
-            <div class="card_trust box_card-primary">
-               <img src="{% static 'media/imagenesHomepage/soportetecn.png' %}" alt="">
-               <h2>Soporte Técnico</h2>
-            </div>
-       </div>
-            </div>
-        </div>
+    <section class="servicio" id="atencion">
+      <div class="contenido_servicio">
+        <h2>Atención al Cliente</h2>
+        <img src="{% static 'media/imagenesHomepage/atencion al cliente.jpg' %}" alt="Atención al Cliente" />
+        <p>
+          En InnovaFix, la atención al cliente no es solo un servicio: es una experiencia estratégica que fortalece la relación entre tu empresa y sus usuarios. Nuestro enfoque combina tecnología inteligente con empatía humana, permitiendo resolver inquietudes de manera rápida, clara y personalizada.
+        </p>
+      </div>
+    </section>
+
+    <section class="servicio" id="soporte">
+      <div class="contenido_servicio">
+        <h2>Soporte Técnico</h2>
+        <img src="{% static 'media/imagenesHomepage/soporte tecnico.jpg' %}" alt="Soporte Técnico" />
+        <p>
+          En InnovaFix, el soporte técnico va más allá de la simple resolución de problemas: es una experiencia de servicio transparente, ágil y centrada en el usuario. Sabemos que la confianza se construye con información clara y soluciones oportunas, por eso hemos desarrollado un apartado exclusivo donde cada cliente puede determinar el estado de los equipos en tiempo real.
+        </p>
+      </div>
+    </section>
+
+    <section class="nosotros" id="nosotros">
+      <div class="contenido_nosotros">
+        <h2>¿Quiénes Somos?</h2>
+        <p>
+          En <strong>InnovaFix</strong>, creemos que la innovación no es un lujo, sino una necesidad estratégica para las empresas modernas. Somos una compañía especializada en el desarrollo de soluciones tecnológicas que transforman procesos corporativos, optimizan recursos y elevan la experiencia del cliente.
+          <br /><br />
+          Nuestra plataforma integra herramientas inteligentes para la gestión de inventarios, atención al cliente, soporte técnico y comercio digital, todo en un entorno intuitivo, seguro y escalable.
+          <br /><br />
+          Lo que nos diferencia es nuestro enfoque centrado en el usuario: cada módulo está diseñado para adaptarse a las necesidades reales de tu negocio, con métricas claras, automatización eficiente y soporte personalizado.
+          <br /><br />
+          Con InnovaFix, no solo digitalizas tu empresa: la haces más ágil, más conectada y más competitiva.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer" id="contacto">
+    <div class="footer_container">
+      <div class="footer_column">
+        <h3>📧 Correo</h3>
+        <p>innovafix69@gmail.com</p>
+      </div>
+
+      <div class="footer_column">
+        <h3>📞 Número de contacto</h3>
+        <p>+57 322 631 7354</p>
+      </div>
+    </div>
+
+    <div class="footer_bottom">
+      <div class="footer_line">
+        <span>InnovaFix © 2025</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script para ocultar el header al hacer scroll -->
+  <script>
+    let lastScrollTop = 0;
+    const header = document.querySelector("header");
+
+    window.addEventListener("scroll", function () {
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollTop > lastScrollTop) {
+        header.classList.add("header-hidden");
+      } else {
+        header.classList.remove("header-hidden");
+      }
+
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+
+    // Scroll suave para el botón "Leer más"
+    document.querySelector('a[href="#nosotros"]').addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector('#nosotros');
+      window.scrollTo({
+        top: target.offsetTop - 80,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Rol, Proveedor, Cliente, Usuario, Ingreso, Producto, Venta, Equipo, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso
 from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm, EquipoForm
 from django.contrib import messages
+from collections import Counter
 
 # RENDERIZADO DE HOME PAGE
 def homepage(request):
@@ -316,10 +317,17 @@ def usuario_listar(request):
 
     usuarios = Usuario.objects.all()
     usuarios_django = User.objects.all()
+    usuarios_count = usuarios.count()
+    roles = Rol.objects.all()
+    labels = [rol.rolNombre for rol in roles]
+    data = [usuarios.filter(rolId=rol).count() for rol in roles]
     return render(request, 'proveedor/usuario/usuario.html', {
         'form': form,
         'usuarios': usuarios,
-        'usuarios_django': usuarios_django
+        'usuarios_django': usuarios_django,
+        'usuarios_count': usuarios_count,
+        'roles_labels': labels,
+        'roles_data': data,
     })
 
 @login_required

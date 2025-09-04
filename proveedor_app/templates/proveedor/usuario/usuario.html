@@ -15,6 +15,13 @@
         </button>
     </div>
 
+    <!-- Gráfico de usuarios -->
+    <div class="my-4">
+        <h4 class="text-center">Usuarios por Rol</h4>
+        <canvas id="usuariosRolChart" width="200" height="25"></canvas>
+    </div>
+
+
     <!-- Modal Agregar Usuario -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -57,7 +64,7 @@
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Usuario</th>
-                    <th>Rol del Usuario (ID)</th>
+                    <th>Rol del Usuario</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
                     <th>Dirección</th>
@@ -104,6 +111,31 @@ document.addEventListener('DOMContentLoaded', function() {
             row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
         });
     });
+});
+</script>
+
+
+<!-- Script para gráfico de usuarios -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('usuariosRolChart').getContext('2d');
+const usuariosRolChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ roles_labels|safe }},
+        datasets: [{
+            label: 'Cantidad de usuarios',
+            data: {{ roles_data|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
 });
 </script>
 {% endblock %}

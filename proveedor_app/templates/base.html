@@ -17,39 +17,20 @@
         @import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
     </style>
 
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="{% static 'tablas/usuario.css' %}">
+    <!-- Bloque para estilos personalizados -->
+    {% block styles %}{% endblock %}
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'media/imagenesLogin/logotitulo.png' %}">
 </head>
-<body>
+<body style="margin: 0; padding: 0;">
     {% if user.is_authenticated %}
     <nav class="sidebar">
         <a href="/">
             <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="InnovaFix Logo" class="logo-innova">
         </a>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item"><a class="nav-link" href="{% url 'proveedor_listar' %}">Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'ingreso_listar' %}">Ingresos</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'producto_listar' %}">Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'usuario_listar' %}">Usuarios</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'rol_listar' %}">Rol</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'venta_listar' %}">Venta</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'cliente_listar' %}">Cliente</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'equipo_listar' %}">Mantenimiento de Equipos</a></li>
-            <li>
-              <a class="nav-link dropdown-toggle" data-bs-toggle="collapse" href="#reportesMenu" role="button" aria-expanded="false" aria-controls="reportesMenu">
-                Reportes
-              </a>
-              <div class="collapse" id="reportesMenu">
-                <ul class="nav flex-column ms-3">
-                    <li><a class="nav-link" href="{% url 'vista_ingreso_info_listar' %}">Vista Ingreso Info</a></li>
-                    <li><a class="nav-link" href="{% url 'vista_compra_venta_listar' %}">Vista Compra Venta</a></li>
-                    <li><a class="nav-link" href="{% url 'vista_proceso_ingreso_listar' %}">Vista Proceso Ingreso</a></li>
-                </ul>
-              </div>
-            </li>
+            <!-- ... enlaces ... -->
         </ul>
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
@@ -61,8 +42,7 @@
     {% endif %}
 
     <div class="content">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     <!-- Bootstrap JS -->

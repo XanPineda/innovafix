@@ -14,6 +14,10 @@ from .models import (
     Rol, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso, Equipo
 )
 from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm, EquipoForm
+from collections import Counter
+from django.db.models import Count
+import json
+
 
 # -------------------------------
 # HOME PAGE
@@ -338,10 +342,17 @@ def usuario_listar(request):
 
     usuarios = Usuario.objects.all()
     usuarios_django = User.objects.all()
+    usuarios_count = usuarios.count()
+    roles = Rol.objects.all()
+    labels = [rol.rolNombre for rol in roles]
+    data = [usuarios.filter(rolId=rol).count() for rol in roles]
     return render(request, 'proveedor/usuario/usuario.html', {
         'form': form,
         'usuarios': usuarios,
-        'usuarios_django': usuarios_django
+        'usuarios_django': usuarios_django,
+        'usuarios_count': usuarios_count,
+        'roles_labels': labels,
+        'roles_data': data,
     })
 
 @login_required
@@ -660,20 +671,41 @@ def exportar_ventas_pdf(request):
         return HttpResponse('Error al generar el PDF')
     return response
 
-#----------------------------
+#-------------------------------------------------------------------------------------------------------------------
 #VISTA DE EQUIPOS
-#-----------------------------
 
 @login_required
 def equipo_listar(request):
-    equipos = Equipo.objects.all()
-    form = EquipoForm()
     if request.method == 'POST':
         form = EquipoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('equipo_listar')  # <-- cerrado correctamente
-    return render(request, 'proveedor/equipos/equipos.html', {'equipos': equipos, 'form': form})
+    equipos = Equipo.objects.all()
+    equipos_django = User.objects.all()
+    equipos_count = equipos.count()
+
+    estados = equipos.values_list('equipoEstado', flat=True)
+    contador_estados = Counter(estados)
+    estados_labels = list(contador_estados.keys())
+    estados_data = list(contador_estados.values())
+
+    colores_por_estado = {
+        "Pendiente": "rgba(255, 99, 132, 0.7)",     # rojo
+        "En Proceso": "rgba(255, 206, 86, 0.7)",   # amarillo
+        "Completado": "rgba(75, 192, 192, 0.7)",   # verde
+    }
+
+    colores_barras = [colores_por_estado.get(estado, "rgba(201, 203, 207, 0.7)") for estado in estados_labels]
+
+    return render(request, 'proveedor/equipos/equipos.html', {
+        'form': EquipoForm(),
+        'equipos': equipos,
+        'equipos_count': equipos_count,
+        'equipos_django': equipos_django,
+        'estados_labels': json.dumps(estados_labels),  # Convertir a JSON
+        'estados_data': json.dumps(estados_data),
+        'colores_barras': json.dumps(colores_barras),
+    })
 
 @login_required
 @require_POST
@@ -682,3 +714,5 @@ def equipo_eliminar(request, pk):
     if request.method == 'POST':
         equipo.delete()
         return redirect('equipo_listar')
+    
+#-------------------------------------------------------------------------------------------------------------------

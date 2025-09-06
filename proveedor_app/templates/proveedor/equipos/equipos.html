@@ -36,6 +36,7 @@
         </div>
       </div>
     </div>
+
     <h2>Lista de Equipos</h2>
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
@@ -77,6 +78,13 @@
         </tbody>
     </table>
 </div>
+
+        <!-- Gráfico de equipos -->
+    <div class="my-4">
+        <h4 class="text-center">Estado de equipos</h4>
+        <canvas id="equiposEstadoChart" width="200" height="25"></canvas>
+    </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('busquedaEquipo');
@@ -89,4 +97,35 @@ document.addEventListener('DOMContentLoaded', function() {
     input.addEventListener('keyup', filtrarTabla);
 });
 </script>
+
+<!-- Script para gráfico de usuarios -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('equiposEstadoChart').getContext('2d');
+const equiposEstadoChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ estados_labels|safe }},
+        datasets: [{
+            //  Quitar el label del dataset
+            data: {{ estados_data|safe }},
+            backgroundColor: {{ colores_barras|safe }},
+            borderColor: {{ colores_barras|safe }},
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false  //  Oculta la leyenda (cuadro y texto)
+            }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+
 {% endblock %}

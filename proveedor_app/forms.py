@@ -80,7 +80,7 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = [
-            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido',
+            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido', 'rolId',
             'usuContrasena', 'usuCorreo', 'usuTelefono',
             'usuDireccion', 'usuFoto'
         ]
@@ -89,6 +89,7 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': forms.TextInput(attrs={'class': 'form-control'}),
             'usuNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'usuApellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'rolId': forms.Select(attrs={'class': 'form-control'}),
             'usuContrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
             'usuCorreo': forms.EmailInput(attrs={'class': 'form-control'}),
             'usuTelefono': forms.TextInput(attrs={'class': 'form-control'}),
@@ -100,6 +101,7 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': 'Nombre de Usuario',
             'usuNombre': 'Nombre',
             'usuApellido': 'Apellido',
+            'rolId': 'Rol',
             'usuContrasena': 'Contraseña',
             'usuCorreo': 'Correo Electrónico',
             'usuTelefono': 'Teléfono',

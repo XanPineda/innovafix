@@ -7,43 +7,45 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/v4-shims.css">
 <link rel="stylesheet" href="{% static 'login/style.css' %}">
 
-<div class="container">
+<!-- Fondo animado con partículas -->
+<div id="particles-js"></div>
+<div class="login-bg">
     <div class="screen">
         <div class="login-image">
-           <img src="{% static 'media/imagenesLogin/img.jpg' %}" alt="Imagen Login">
+            <img src="{% static 'media/imagenesLogin/img.jpg' %}" alt="Imagen Login">
         </div>
         <div class="screen__content">
             <div class="top-buttons">
                 <a href="{% url 'homepage' %}" class="top-btn"><i class="fas fa-home"></i> Inicio</a>
                 <a href="{% url 'registro' %}" class="top-btn"><i class="fas fa-user-plus"></i> Registrar</a>
             </div>
- <form class="login" method="post" novalidate>
-    {% csrf_token %}
-    <div class="logo-container">
-        <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="Logo Empresa" class="logo-img">
-    </div>
-    <div class="login__field">
-        <label for="id_username" class="sr-only">Usuario</label>
-        {{ form.username }}
-    </div>
-    <div class="login__field">
-        <label for="id_password" class="sr-only">Contraseña</label>
-        {{ form.password }}
-    </div>
-    <button type="submit" class="button login__submit" aria-label="Iniciar sesión">
-        <span class="button__text">Iniciar sesión</span>
-        <i class="button__icon fas fa-chevron-right"></i>
-    </button>
-    {% if form.errors %}
-        <div class="login-alert">
-            Por favor, verifica tu nombre de usuario y contraseña.
-        </div>
-    {% endif %}
-</form>
+            <form class="login" method="post" novalidate>
+                {% csrf_token %}
+                <div class="logo-container">
+                    <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="Logo Empresa" class="logo-img">
+                </div>
+                <div class="login__field">
+                    <label for="id_username" class="sr-only">Usuario</label>
+                    {{ form.username }}
+                </div>
+                <div class="login__field">
+                    <label for="id_password" class="sr-only">Contraseña</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="button login__submit" aria-label="Iniciar sesión">
+                    <span class="button__text">Iniciar sesión</span>
+                    <i class="button__icon fas fa-chevron-right"></i>
+                </button>
+                {% if form.errors %}
+                <div class="login-alert">
+                    Por favor, verifica tu nombre de usuario y contraseña.
+                </div>
+                {% endif %}
             </form>
-            
-            </div>
+
+
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

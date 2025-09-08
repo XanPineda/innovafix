@@ -99,6 +99,7 @@ class Usuario(models.Model):
     usuUsuario = models.CharField(max_length=10)
     usuNombre = models.CharField(max_length=25, unique=True)
     usuApellido = models.CharField(max_length=25)
+    rolId = models.ForeignKey(Rol, on_delete=models.CASCADE, db_column='rolId')
     usuContrasena = models.CharField(max_length=10)
     usuCorreo = models.EmailField(max_length=35)
     usuTelefono = models.CharField(max_length=10)

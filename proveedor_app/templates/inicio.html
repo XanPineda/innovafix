@@ -6,7 +6,7 @@
 <!-- Contenido principal de la página de inicio -->
 <div class="container mt-5">
     <div class="text-center">
-        <h1 class="mb-4">Bienvenido, {{ user.username }} 👋</h1>
+        <h1 class="mb-4">Bienvenido, {{ user.username }} 👋</h1> <!--Mensaje de bienvenida-->
         <p class="lead">Selecciona una opción del menú para comenzar.</p>
         <div class="mt-4">
             <a href="{% url 'usuario_listar' %}" class="btn btn-info">Ver usuarios</a>
@@ -14,4 +14,6 @@
     </div>
 </div>
 {% endblock %}
+
+
  

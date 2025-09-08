@@ -24,13 +24,6 @@
         </button>
     </div>
 
-    <!-- Gráfico -->
-    <div class="my-4">
-        <h4 class="text-center">Usuarios por Rol</h4>
-        <canvas id="usuariosRolChart" width="200" height="25"></canvas>
-    </div>
-
-    <!-- Modal -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -109,7 +102,6 @@
     </div>
 </div>
 
-<!-- Filtro de búsqueda -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('busquedaUsuario');
@@ -134,7 +126,7 @@ const usuariosRolChart = new Chart(ctx, {
     data: {
         labels: {{ roles_labels|safe }},
         datasets: [{
-            label: 'Cantidad de usuarios',
+            // quitamos el label
             data: {{ roles_data|safe }},
             backgroundColor: 'rgba(54, 162, 235, 0.7)',
             borderColor: 'rgba(54, 162, 235, 1)',
@@ -142,6 +134,11 @@ const usuariosRolChart = new Chart(ctx, {
         }]
     },
     options: {
+        plugins: {
+            legend: {
+                display: false // oculta la leyenda
+            }
+        },
         scales: {
             y: { beginAtZero: true }
         }

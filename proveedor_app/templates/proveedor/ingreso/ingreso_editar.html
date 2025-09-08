@@ -1,21 +1,17 @@
 {% extends 'base.html' %}
-{% load static %}
-
 {% block title %}Editar Ingreso{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Editar Ingreso #{{ form.instance.ingresoId }}</h2>
+    <h2 class="mb-4">Editar Ingreso</h2>
 
     <form method="POST" id="form-editar-ingreso">
         {% csrf_token %}
 
-        <!-- ==============================
-             Campos principales del Ingreso
-        ============================== -->
+        <!-- Campos principales del Ingreso -->
         <div class="row mb-3">
             {% for field in form %}
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6">
                     <label class="form-label">{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}
@@ -27,21 +23,17 @@
 
         <hr>
 
-        <!-- ==============================
-             Productos asociados (formset)
-        ============================== -->
+        <!-- Productos asociados -->
         <h5 class="mb-3">Productos asociados</h5>
         {{ formset.management_form }}
 
         <table class="table table-bordered table-striped" id="formset-table">
             <thead>
                 <tr>
-                    {% if formset.forms %}
-                        {% for field in formset.forms.0.visible_fields %}
-                            <th>{{ field.label }}</th>
-                        {% endfor %}
-                        <th>Eliminar</th>
-                    {% endif %}
+                    {% for field in formset.forms.0.visible_fields %}
+                        <th>{{ field.label }}</th>
+                    {% endfor %}
+                    <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody id="formset-container">
@@ -51,95 +43,64 @@
                         <td>{{ field }}</td>
                     {% endfor %}
                     <td>{{ f.DELETE }}</td>
+
+                    {% for hidden in f.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <!-- Botones de acción -->
-        <div class="d-flex justify-content-end">
-            <a href="{% url 'ingreso_listar' %}" class="btn btn-outline-danger me-2">Cancelar</a>
-            <button type="submit" class="btn btn-success">Guardar Cambios</button>
-        </div>
+        <!-- Botón agregar producto -->
+        <button type="button" class="btn btn-secondary mb-3" id="add-product">
+            <i class="fa fa-plus"></i> Agregar Producto
+        </button>
+
+<!-- Plantilla oculta para nuevos productos -->
+<template id="empty-form">
+    <tr class="producto-fila">
+        {% for field in formset.empty_form.visible_fields %}
+            <td>{{ field }}</td>
+        {% endfor %}
+        <td>
+            <button type="button" class="btn btn-danger btn-sm remove-new">Eliminar</button>
+        </td>
+        {% for hidden in formset.empty_form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+    </tr>
+</template>
+
+        
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="{% url 'ingreso_listar' %}" class="btn btn-outline-danger">Cancelar</a>
     </form>
-</div>
 
-<!-- ==============================
-     Estilos
-============================== -->
-<style>
-.nuevo-producto {
-    animation: fadeIn 0.3s ease-in-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.is-invalid {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-}
-</style>
-
-<!-- ==============================
-     Validación y SweetAlert
-============================== -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("form-editar-ingreso");
+    const container = document.querySelector("#formset-container");
+    const addButton = document.querySelector("#add-product");
+    const totalForms = document.querySelector("#id_producto_set-TOTAL_FORMS");
+    const emptyFormHtml = document.querySelector("#empty-form").innerHTML;
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    if (!container || !addButton || !totalForms) return;
 
-        let valid = true;
+addButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    const index = parseInt(totalForms.value, 10);
+    const template = document.querySelector("#empty-form").content.cloneNode(true);
+    const html = template.firstElementChild.outerHTML.replace(/__prefix__/g, index);
+    container.insertAdjacentHTML("beforeend", html);
+    totalForms.value = index + 1;
+});
 
-        // Validar campos del ingreso
-        form.querySelectorAll("input[required], select[required], textarea[required]").forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add("is-invalid");
-                valid = false;
-            } else {
-                field.classList.remove("is-invalid");
-            }
-        });
-
-        // Validar campos del formset de productos
-        document.querySelectorAll("#formset-container input, #formset-container select, #formset-container textarea").forEach(field => {
-            if (field.hasAttribute("required") && !field.value.trim()) {
-                field.classList.add("is-invalid");
-                valid = false;
-            } else {
-                field.classList.remove("is-invalid");
-            }
-        });
-
-        if (!valid) {
-            Swal.fire({
-                icon: "error",
-                title: "Campos incompletos",
-                text: "Por favor completa todos los campos obligatorios antes de guardar."
-            });
-            return;
+    container.addEventListener("click", function(e){
+        if (e.target.classList.contains("remove-new")) {
+            e.target.closest(".producto-fila").remove();
         }
-
-        Swal.fire({
-            title: "¿Deseas guardar los cambios?",
-            text: "Esta acción actualizará el ingreso y sus productos.",
-            icon: "question",
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: "Guardar",
-            denyButtonText: "No guardar",
-            cancelButtonText: "Cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit(); // Se envía el form y la vista redirige a ingreso_listar
-            } else if (result.isDenied) {
-                Swal.fire("Los cambios no fueron guardados", "", "info");
-            }
-        });
     });
 });
 </script>
+</div>
 {% endblock %}

@@ -1,19 +1,21 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Inicio{% endblock %}
 
-{% block content %}
-<!-- Contenido principal de la página de inicio -->
-<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="mb-4">Bienvenido, {{ user.username }} 👋</h1> <!--Mensaje de bienvenida-->
-        <p class="lead">Selecciona una opción del menú para comenzar.</p>
-        <div class="mt-4">
-            <a href="{% url 'usuario_listar' %}" class="btn btn-info">Ver usuarios</a>
-        </div>
-    </div>
-</div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'inicio/inicio.css' %}">
 {% endblock %}
 
+{% block content %}
+<!-- Fondo animado con partículas -->
+<div id="particles-js"></div>
 
- 
+<!-- Contenido flotante sobre el fondo -->
+<div class="contenido-libre text-center">
+    <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="Logo InnovaFix" class="logo mb-3">
+    <h1>¡Hola, <span class="username">{{ user.username }}</span>! 👋</h1>
+    <p class="lead">Bienvenido a <strong>InnovaFix</strong>, tu plataforma de gestión inteligente.</p>
+    <p class="text-muted">Selecciona una opción del menú para comenzar.</p>
+</div>
+{% endblock %}

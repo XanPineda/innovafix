@@ -80,7 +80,7 @@ class UsuarioForm(forms.ModelForm):
     class Meta:
         model = Usuario
         fields = [
-            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido',
+            'usuCedula', 'usuUsuario', 'usuNombre', 'usuApellido', 'rolId',
             'usuContrasena', 'usuCorreo', 'usuTelefono',
             'usuDireccion', 'usuFoto'
         ]
@@ -89,6 +89,7 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': forms.TextInput(attrs={'class': 'form-control'}),
             'usuNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'usuApellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'rolId': forms.Select(attrs={'class': 'form-control'}),
             'usuContrasena': forms.PasswordInput(attrs={'class': 'form-control'}),
             'usuCorreo': forms.EmailInput(attrs={'class': 'form-control'}),
             'usuTelefono': forms.TextInput(attrs={'class': 'form-control'}),
@@ -100,6 +101,7 @@ class UsuarioForm(forms.ModelForm):
             'usuUsuario': 'Nombre de Usuario',
             'usuNombre': 'Nombre',
             'usuApellido': 'Apellido',
+            'rolId': 'Rol',
             'usuContrasena': 'Contraseña',
             'usuCorreo': 'Correo Electrónico',
             'usuTelefono': 'Teléfono',
@@ -125,53 +127,51 @@ class RolForm (forms.ModelForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        exclude = ['productoId', 'ingreso']
+        exclude = ['productoId']  # ✅ Se asigna automáticamente en la vista
+
         labels = {
             'productoNombre': 'Nombre del Producto',
             'productoPrecioUnidad': 'Precio Unitario',
             'productoCantidad': 'Cantidad',
             'productoDescripcion': 'Descripción',
+            'ingreso': 'Ingreso Asociado',
         }
+
         widgets = {
             'productoNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'productoPrecioUnidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoDescripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'ingreso': forms.Select(attrs={'class': 'form-control'}),  # ✅ Campo obligatorio
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['ingreso'].required = True
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = [
-            'ventaId',
-            'ventaCantidad',
-            'ventaTipoProducto',
-            'ventaMetodoPago',
-            'ventaPrecio',
-            'productoId',
-            'clienteCedula',
-            'usuCedula',
-        ]
+        exclude = ['ventaId', 'usuCedula']  
+
         widgets = {
-            'ventaId': forms.TextInput(attrs={'class': 'form-control'}),
             'ventaCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
-            'ventaTipoProducto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional'}),
+            'ventaTipoProducto': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Opcional'
+            }),
             'ventaMetodoPago': forms.TextInput(attrs={'class': 'form-control'}),
             'ventaPrecio': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoId': forms.Select(attrs={'class': 'form-control'}),
             'clienteCedula': forms.Select(attrs={'class': 'form-control'}),
-            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
         }
 
         labels = {
-            'ventaId': 'ID de Venta',
             'ventaCantidad': 'Cantidad Vendida',
             'ventaTipoProducto': 'Tipo de Producto (opcional)',
             'ventaMetodoPago': 'Método de Pago',
             'ventaPrecio': 'Precio Total',
             'productoId': 'Producto',
             'clienteCedula': 'Cliente',
-            'usuCedula': 'Usuario que registró la venta',
         }
 
 class EquipoForm(forms.ModelForm):

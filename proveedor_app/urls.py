@@ -36,7 +36,8 @@ urlpatterns = [
     path('exportar_ingresos_pdf/', views.exportar_ingresos_pdf, name='exportar_ingresos_pdf'),
     # PRODUCTOS
     path('productos/', views.producto_listar, name='producto_listar'),
-    path('producto/eliminar/<int:producto_id>/', views.producto_eliminar, name='producto_eliminar'),
+    path('producto/eliminar/<str:producto_id>/', views.producto_eliminar, name='producto_eliminar'),
+
 
     # ROLES
     path('roles/', views.rol_listar, name='rol_listar'),
@@ -55,6 +56,7 @@ urlpatterns = [
     #Equipo
     path('equipos/', views.equipo_listar, name='equipo_listar'),
     path('equipo/eliminar/<int:pk>/', views.equipo_eliminar, name='equipo_eliminar'),
+
     #vistas de reportes
     path('reportes/vista_ingreso_info/', views.vista_ingreso_info_listar, name='vista_ingreso_info_listar'),
     path('reportes/vista_compra_venta/', views.vista_compra_venta_listar, name='vista_compra_venta_listar'),

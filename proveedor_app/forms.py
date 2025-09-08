@@ -198,6 +198,6 @@ ProductoFormSet = inlineformset_factory(
     Ingreso,
     Producto,
     form=ProductoForm,
-    extra=0,         
+    extra=3,  # Número de formularios adicionales vacíos  
     can_delete=True  
 )

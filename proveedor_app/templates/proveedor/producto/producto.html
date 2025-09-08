@@ -75,7 +75,7 @@
                 <td>{{ producto.productoPrecioUnidad }}</td>
                 <td>{{ producto.productoCantidad }}</td>
                 <td>{{ producto.productoDescripcion }}</td>
-                <td>{{ producto.ingresoId }}</td>
+                <td>{{ producto.ingreso }}</td>
                 <td>
                   {% if producto.productoId %}
                     <form method="post" action="{% url 'producto_eliminar' producto.productoId %}">

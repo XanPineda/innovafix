@@ -386,43 +386,67 @@ def ingreso_listar(request):
 # CREAR INGRESO + PRODUCTOS
 # ==============================
 def ingreso_crear(request):
-    ProductoFormSet = inlineformset_factory(Ingreso, Producto, form=ProductoForm, extra=1, can_delete=True)
+    ProductoFormSet = inlineformset_factory(
+        Ingreso,
+        Producto,
+        form=ProductoForm,
+        extra=1,  # mínimo uno visible
+        can_delete=True
+    )
 
     if request.method == 'POST':
-        print("Formulario recibido")
+        print("📌 POST recibido:", request.POST)  # <--- DEBUG
+
         form = IngresoForm(request.POST)
         if form.is_valid():
-            ingreso = form.save()
+            ingreso = form.save(commit=False)  # aún no guarda
             formset = ProductoFormSet(request.POST, instance=ingreso)
+
             if formset.is_valid():
+                ingreso.save()
                 formset.save()
-                messages.success(request, "✅ El ingreso fue registrado correctamente.")
+                messages.success(request, "✅ El ingreso y los productos fueron registrados correctamente.")
                 return redirect('ingreso_listar')
             else:
-                print("Errores del formset:", formset.errors)
+                print("❌ Errores del formset:", formset.errors)  # <--- DEBUG
         else:
-            print("Errores del formulario:", form.errors)
+            print("❌ Errores del formulario ingreso:", form.errors)  # <--- DEBUG
+            formset = ProductoFormSet(request.POST)
     else:
         form = IngresoForm()
         formset = ProductoFormSet()
 
-    return render(request, 'proveedor/ingreso/ingreso_form.html', {'form': form, 'formset': formset})
-
+    return render(request, 'proveedor/ingreso/ingreso_form.html', {
+        'form': form,
+        'formset': formset
+    })
 # ==============================
 # EDITAR INGRESO + PRODUCTOS
 # ==============================
+
 def ingreso_editar(request, id):
     ingreso = get_object_or_404(Ingreso, ingresoId=id)
+
+    ProductoFormSet = inlineformset_factory(
+        Ingreso,
+        Producto,
+        form=ProductoForm,
+        extra=0,         # Solo muestra los existentes
+        can_delete=True
+    )
 
     if request.method == "POST":
         form = IngresoForm(request.POST, instance=ingreso)
         formset = ProductoFormSet(request.POST, instance=ingreso)
 
         if form.is_valid() and formset.is_valid():
-            form.save()
-            formset.save()  # Esto guarda todos los productos del formset
+            form.save()  # Guarda los datos del ingreso
+            formset.save()  # Guarda los productos asociados
+            messages.success(request, "✅ El ingreso y los productos fueron actualizados correctamente.")
             return redirect("ingreso_listar")
-
+        else:
+            print("Errores form:", form.errors)
+            print("Errores formset:", formset.errors)
     else:
         form = IngresoForm(instance=ingreso)
         formset = ProductoFormSet(instance=ingreso)
@@ -431,6 +455,7 @@ def ingreso_editar(request, id):
         "form": form,
         "formset": formset,
     })
+
 # ==============================
 # ELIMINAR INGRESO
 # ==============================

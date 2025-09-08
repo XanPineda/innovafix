@@ -1,21 +1,29 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'tablas/usuario.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <h1 class="mb-4 text-center">Gestión de Usuarios</h1>
 
-    <!-- Buscador y botón en una sola fila -->
+    <!-- Buscador y botón -->
     <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
-        <div class="search-wrapper flex-grow-1">
+        <div class="search-wrapper flex-grow-1 d-flex">
             <input type="text" id="busquedaUsuario" class="form-control search-input" placeholder="Buscar usuario...">
-            <i class="fas fa-search search-icon-right"></i>
+            <button id="btnFiltrarUsuario" class="btn btn-outline-secondary ms-2" type="button">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#usuarioModal">
             <i class="fas fa-user-plus me-2"></i> Agregar Usuario
         </button>
     </div>
 
-    <!-- Modal Agregar Usuario -->
     <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -47,7 +55,7 @@
         </div>
     </div>
 
-    <!-- Tabla de Usuarios -->
+    <!-- Tabla -->
     <h2 class="mt-5 text-center">Lista de Usuarios</h2>
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
@@ -79,14 +87,14 @@
                         <form method="post" action="{% url 'usuario_eliminar' usuario.usuCedula %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-trash-inline">
-                                <i class="fas fa-trash-alt me-2"></i> 
+                                <i class="fas fa-trash-alt me-2"></i>
                             </button>
                         </form>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center text-muted">No hay usuarios registrados.</td>
+                    <td colspan="9" class="text-center text-muted">No hay usuarios registrados.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -94,27 +102,22 @@
     </div>
 </div>
 
-    <!-- Gráfico de usuarios -->
-    <div class="my-4">
-        <h4 class="text-center">Usuarios por Rol</h4>
-        <canvas id="usuariosRolChart" width="200" height="25"></canvas>
-    </div>
-
-<!-- Script de búsqueda -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('busquedaUsuario');
-    input.addEventListener('keyup', function() {
+    const btnFiltrar = document.getElementById('btnFiltrarUsuario');
+    function filtrarTabla() {
         const filtro = input.value.toLowerCase();
         document.querySelectorAll('#tablaUsuario tr').forEach(function(row) {
             row.style.display = row.textContent.toLowerCase().includes(filtro) ? '' : 'none';
         });
-    });
+    }
+    input.addEventListener('keyup', filtrarTabla);
+    btnFiltrar.addEventListener('click', filtrarTabla);
 });
 </script>
 
-
-<!-- Script para gráfico de usuarios -->
+<!-- Gráfico de usuarios -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const ctx = document.getElementById('usuariosRolChart').getContext('2d');

@@ -28,7 +28,7 @@
                 <td>
                     <ul>
                         {% for producto in ingreso.producto_set.all %}
-                            <li>{{ producto.prodNombre }} ({{ producto.prodCantidad }})</li>
+                            <li>{{ producto.productoNombre }} ({{ producto.productoCantidad }})</li>
                         {% empty %}
                             <li>No hay productos asociados</li>
                         {% endfor %}

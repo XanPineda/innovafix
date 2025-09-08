@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5">
@@ -60,7 +59,7 @@
                 <td>{{ producto.productoPrecioUnidad }}</td>
                 <td>{{ producto.productoCantidad }}</td>
                 <td>{{ producto.productoDescripcion }}</td>
-                <td>{{ producto.ingresoId }}</td>
+                <td>{{ producto.ingreso }}</td>
                 <td>
                     <form method="post" action="{% url 'producto_eliminar' producto.productoId %}">
                       <button type="submit" class="btn btn-trash">

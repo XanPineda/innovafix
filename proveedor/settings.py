@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'proveedor_app',  # Your custom app
     'widget_tweaks',
-]
+    'django.contrib.humanize', 
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

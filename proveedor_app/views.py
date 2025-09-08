@@ -696,7 +696,6 @@ def exportar_ventas_pdf(request):
         return HttpResponse('Error al generar el PDF')
     return response
 
-#-------------------------------------------------------------------------------------------------------------------
 #VISTA DE EQUIPOS
 
 @login_required
@@ -739,5 +738,3 @@ def equipo_eliminar(request, pk):
     if request.method == 'POST':
         equipo.delete()
         return redirect('equipo_listar')
-    
-#-------------------------------------------------------------------------------------------------------------------

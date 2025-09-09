@@ -107,7 +107,7 @@ class UsuarioForm(forms.ModelForm):
             'usuTelefono': 'Teléfono',
             'usuDireccion': 'Dirección',
             'usuFoto': 'Foto de Perfil (URL o archivo)',
-        }
+}
 
 class RolForm (forms.ModelForm):
     class Meta:
@@ -127,51 +127,53 @@ class RolForm (forms.ModelForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        exclude = ['productoId']  # ✅ Se asigna automáticamente en la vista
-
+        exclude = ['productoId', 'ingreso']
         labels = {
             'productoNombre': 'Nombre del Producto',
             'productoPrecioUnidad': 'Precio Unitario',
             'productoCantidad': 'Cantidad',
             'productoDescripcion': 'Descripción',
-            'ingreso': 'Ingreso Asociado',
         }
-
         widgets = {
             'productoNombre': forms.TextInput(attrs={'class': 'form-control'}),
             'productoPrecioUnidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoDescripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'ingreso': forms.Select(attrs={'class': 'form-control'}),  # ✅ Campo obligatorio
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['ingreso'].required = True
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        exclude = ['ventaId', 'usuCedula']  
-
+        fields = [
+            'ventaId',
+            'ventaCantidad',
+            'ventaTipoProducto',
+            'ventaMetodoPago',
+            'ventaPrecio',
+            'productoId',
+            'clienteCedula',
+            'usuCedula',
+        ]
         widgets = {
+            'ventaId': forms.TextInput(attrs={'class': 'form-control'}),
             'ventaCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
-            'ventaTipoProducto': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Opcional'
-            }),
+            'ventaTipoProducto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional'}),
             'ventaMetodoPago': forms.TextInput(attrs={'class': 'form-control'}),
             'ventaPrecio': forms.NumberInput(attrs={'class': 'form-control'}),
             'productoId': forms.Select(attrs={'class': 'form-control'}),
             'clienteCedula': forms.Select(attrs={'class': 'form-control'}),
+            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
         }
 
         labels = {
+            'ventaId': 'ID de Venta',
             'ventaCantidad': 'Cantidad Vendida',
             'ventaTipoProducto': 'Tipo de Producto (opcional)',
             'ventaMetodoPago': 'Método de Pago',
             'ventaPrecio': 'Precio Total',
             'productoId': 'Producto',
             'clienteCedula': 'Cliente',
+            'usuCedula': 'Usuario que registró la venta',
         }
 
 class EquipoForm(forms.ModelForm):
@@ -199,5 +201,5 @@ ProductoFormSet = inlineformset_factory(
     Producto,
     form=ProductoForm,
     extra=3,  # Número de formularios adicionales vacíos  
-    can_delete=True  
+    can_delete=True
 )

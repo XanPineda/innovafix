@@ -34,6 +34,7 @@ urlpatterns = [
     path('ingreso/eliminar/<int:id>/', views.ingreso_eliminar, name='ingreso_eliminar'),
     path('exportar_ingresos_excel/', views.exportar_ingresos_excel, name='exportar_ingresos_excel'),
     path('exportar_ingresos_pdf/', views.exportar_ingresos_pdf, name='exportar_ingresos_pdf'),
+    
     # PRODUCTOS
     path('productos/', views.producto_listar, name='producto_listar'),
     path('producto/eliminar/<str:producto_id>/', views.producto_eliminar, name='producto_eliminar'),

@@ -5,163 +5,19 @@
 {% block title %}Registro{% endblock %}
 
 {% block content %}
-<style>
-    body {
-        background: linear-gradient(90deg, #48CFBC, #FDE74C) !important;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-    }
-    .registro-bg {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-        padding: 0;
-    }
-    .registro-unificado {
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        justify-content: center;
-        width: 80vw;
-        max-width: 700px;
-        min-height: 40vh;
-        background: #48CFBC;
-        border-radius: 28px;
-        box-shadow: 0 4px 24px #22979922;
-        overflow: hidden;
-    }
-    .registro-form-container {
-        flex: 1 1 0;
-        min-width: 220px;
-        max-width: 320px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 24px 12px;
-        background: #48CFBC;
-        border-radius: 28px 0 0 28px;
-        box-shadow: none;
-    }
-    .registro-logo {
-        display: block;
-        margin: 0 auto 18px auto;
-        max-width: 100px;
-        height: auto;
-    }
-.registro-img-container {
-    flex: 1 1 0;
-    min-width: 350px;
-    max-width: 500px;
-    min-height: 600px;
-    max-height: 600px;
-    height: 100%;
-    background: #48CFBC;
-    border-radius: 0 28px 28px 0;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: stretch;
-}
-
-.registro-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 0 28px 28px 0;
-    box-shadow: 0 4px 24px #22979922;
-    background: #48CFBC;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-    @media (max-width: 900px) {
-        .registro-unificado {
-            flex-direction: column;
-            max-width: 98vw;
-            border-radius: 20px;
-        }
-        .registro-form-container {
-            border-radius: 20px 20px 0 0;
-            max-width: 98vw;
-        }
-        .registro-img-container {
-            border-radius: 0 0 20px 20px;
-            max-width: 98vw;
-            min-height: 220px;
-            max-height: 320px;
-            height: 220px;
-            justify-content: center;
-            position: relative;
-        }
-        .registro-img {
-            border-radius: 0 0 20px 20px;
-            min-width: 220px;
-            min-height: 220px;
-            max-width: 100%;
-            max-height: 320px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-    }
-    @media (max-width: 600px) {
-        .registro-unificado {
-            max-width: 100vw;
-            border-radius: 0;
-            box-shadow: none;
-        }
-        .registro-form-container,
-        .registro-img-container {
-            padding: 8px;
-            min-width: 0;
-            max-width: 100vw;
-        }
-        .registro-img-container {
-            min-height: 120px;
-            max-height: 180px;
-            height: 120px;
-            position: relative;
-        }
-        .registro-img {
-            min-height: 120px;
-            max-height: 180px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-    }
-    registro-button {
-        background-color: #FDE74C;
-        color: #000;
-        border: none;
-        border-radius: 4px;
-        padding: 10px 15px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-</style>
+<!-- Fondo animado con partículas -->
+<div id="particles-js"></div>
 <div class="registro-bg">
     <div class="registro-unificado">
         <div class="registro-form-container">
+            <link rel="stylesheet" href="{% static 'registro/style.css' %}">
             <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="Logo InnovaFix" class="registro-logo">
             <h2 class="mb-3 text-center">Crear Cuenta</h2>
 
             {% if form.errors %}
-                <div class="alert alert-danger">
-                    Por favor, corrige los errores en el formulario.
-                </div>
+            <div class="alert alert-danger">
+                Por favor, corrige los errores en el formulario.
+            </div>
             {% endif %}
 
             <form method="post" novalidate>
@@ -170,21 +26,21 @@
                     <label for="{{ form.username.id_for_label }}" class="form-label">Nombre de usuario</label>
                     {% render_field form.username class="form-control" %}
                     {% for error in form.username.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                    <div class="text-danger">{{ error }}</div>
                     {% endfor %}
                 </div>
                 <div class="mb-2">
                     <label for="{{ form.password1.id_for_label }}" class="form-label">Contraseña</label>
                     {% render_field form.password1 class="form-control" %}
                     {% for error in form.password1.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                    <div class="text-danger">{{ error }}</div>
                     {% endfor %}
                 </div>
                 <div class="mb-2">
                     <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmar contraseña</label>
                     {% render_field form.password2 class="form-control" %}
                     {% for error in form.password2.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                    <div class="text-danger">{{ error }}</div>
                     {% endfor %}
                 </div>
                 <button type="submit" class="btn btn-amarillo w-100 mt-2">Registrarse</button>

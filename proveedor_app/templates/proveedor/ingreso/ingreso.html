@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (addButton) {
         addButton.addEventListener("click", function () {
-            let newFormHtml = emptyForm.replace(/__prefix__/g, formNum);
+            let newFormHtml = emptyForm.replace(/_prefix_/g, formNum);
             formContainer.insertAdjacentHTML("beforeend", newFormHtml);
             formNum++;
             totalForms.value = formNum;
@@ -164,4 +164,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-{% endblock %}
+{%endblock%}

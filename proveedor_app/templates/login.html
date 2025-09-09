@@ -1,49 +1,73 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}Iniciar Sesión{% endblock %}
 {% block navbar %}{% endblock %}
-{% block content %}
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/v4-shims.css">
-<link rel="stylesheet" href="{% static 'login/style.css' %}">
 
-<div class="container">
-    <div class="screen">
-        <div class="login-image">
-           <img src="{% static 'media/imagenesLogin/img.jpg' %}" alt="Imagen Login">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'login/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Fondo animado con partículas -->
+<div id="particles-js"></div>
+
+<!-- Contenedor principal -->
+<div class="login-body">
+  <div class="screen">
+    <!-- Imagen decorativa -->
+    <div class="login-image">
+      <img src="{% static 'media/imagenesLogin/img.jpg' %}" alt="Imagen Login">
+    </div>
+
+    <!-- Formulario -->
+    <div class="screen__content">
+      <form class="login" method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Logo -->
+        <div class="logo-container">
+          <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="Logo Empresa" class="logo-img">
         </div>
-        <div class="screen__content">
-            <div class="top-buttons">
-                <a href="{% url 'homepage' %}" class="top-btn"><i class="fas fa-home"></i> Inicio</a>
-                <a href="{% url 'registro' %}" class="top-btn"><i class="fas fa-user-plus"></i> Registrar</a>
-            </div>
- <form class="login" method="post" novalidate>
-    {% csrf_token %}
-    <div class="logo-container">
-        <img src="{% static 'media/imagenesLogin/logotitulo.png' %}" alt="Logo Empresa" class="logo-img">
-    </div>
-    <div class="login__field">
-        <label for="id_username" class="sr-only">Usuario</label>
-        {{ form.username }}
-    </div>
-    <div class="login__field">
-        <label for="id_password" class="sr-only">Contraseña</label>
-        {{ form.password }}
-    </div>
-    <button type="submit" class="button login__submit" aria-label="Iniciar sesión">
-        <span class="button__text">Iniciar sesión</span>
-        <i class="button__icon fas fa-chevron-right"></i>
-    </button>
-    {% if form.errors %}
+
+        <!-- Botones superiores -->
+        <div class="top-buttons">
+          <a href="{% url 'homepage' %}" class="top-btn"><i class="fas fa-home"></i> Inicio</a>
+          <a href="{% url 'registro' %}" class="top-btn"><i class="fas fa-user-plus"></i> Registrar</a>
+        </div>
+
+        <!-- Campos del formulario -->
+        <div class="login__field">
+          <label for="id_username" class="sr-only">Usuario</label>
+          {{ form.username }}
+        </div>
+
+        <div class="login__field">
+          <label for="id_password" class="sr-only">Contraseña</label>
+          {{ form.password }}
+        </div>
+
+        <!-- Botón de iniciar sesión -->
+        <button type="submit" class="button login__submit" aria-label="Iniciar sesión">
+          <span class="button__text">Iniciar sesión</span>
+          <i class="button__icon fas fa-chevron-right"></i>
+        </button>
+
+        {% if form.errors %}
         <div class="login-alert">
-            Por favor, verifica tu nombre de usuario y contraseña.
+          Por favor, verifica tu nombre de usuario y contraseña.
         </div>
-    {% endif %}
-</form>
-            </form>
-            
-            </div>
-        </div>
+        {% endif %}
+      </form>
     </div>
+  </div>
 </div>
+
+<!-- Script de partículas -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+  particlesJS.load('particles-js', '{% static "inicio/particles.json" %}', function() {
+    console.log('Particles.js cargado correctamente');
+  });
+</script>
 {% endblock %}

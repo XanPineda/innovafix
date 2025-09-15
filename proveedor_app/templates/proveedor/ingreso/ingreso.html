@@ -5,85 +5,20 @@
 <div class="container py-5">
 
     <h1 class="mb-4">Gestión de Ingresos</h1>
-
-    <!-- Botón para abrir el modal -->
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalIngreso">
-        Agregar Ingreso
-    </button>
-
-    <!-- Modal para crear ingreso -->
-    <div class="modal fade" id="modalIngreso" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Agregar Ingreso</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" id="form-crear-ingreso" action="{% url 'ingreso_crear' %}">
-                        {% csrf_token %}
-
-                        <!-- Campos principales del ingreso -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre Usuario</label>
-                                {{ form.usuCedula }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Proveedor</label>
-                                {{ form.proveedorNit }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Valor</label>
-                                {{ form.ingresoValor }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Cantidad</label>
-                                {{ form.ingresoCantidad }}
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <!-- ==============================
-                             Productos asociados (formset)
-                        ============================== -->
-                        <h5 class="mb-3">Productos asociados</h5>
-                        {{ formset.management_form }}
-
-                        <div id="form-container">
-                            {% for f in formset %}
-                                <div class="form-row border p-2 mb-2 rounded">
-                                    {{ f.as_p }}
-                                    <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        <!-- 👇 Formulario vacío para clonar -->
-                        <div id="empty-form" style="display:none;">
-                            <div class="form-row border p-2 mb-2 rounded">
-                                {{ formset.empty_form.as_p }}
-                                <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
-                            </div>
-                        </div>
-
-                        <button type="button" id="add-form" class="btn btn-secondary mb-3">
-                            <i class="bi bi-plus"></i> Agregar Producto
-                        </button>
-
-                        <div class="text-end mt-3">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-save"></i> Guardar Ingreso
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <hr>
+
+    <!-- Buscador y botón -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+        <div class="search-wrapper flex-grow-1 d-flex">
+            <input type="text" id="busquedaIngreso" class="form-control search-input" placeholder="Buscar ingreso...">
+            <button id="btnFiltrarIngreso" class="btn btn-outline-secondary ms-2" type="button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalIngreso">
+            <i class="fas fa-plus me-2"></i> Agregar Ingreso
+        </button>
+    </div>
 
     <!-- Lista de ingresos -->
     <h2>Ingresos Registrados</h2>
@@ -119,9 +54,11 @@
                     </td>
                     <td>
                         <a href="{% url 'ingreso_editar' ingreso.ingresoId %}" class="btn btn-primary me-1">Editar</a>
-                        <form method="post" action="{% url 'ingreso_eliminar' ingreso.ingresoId %}" style="display:inline;">
+                        <form method="post" action="{% url 'ingreso_eliminar' ingreso.ingresoId %}" class="form-eliminar" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                            <button type="button" class="btn btn-trash btn-confirmar-eliminacion">
+                                <i class="fas fa-trash-alt me-2"></i> Eliminar
+                            </button>
                         </form>
                     </td>
                 </tr>
@@ -135,7 +72,72 @@
     </div>
 </div>
 
-<!-- Script para formset dinámico -->
+<!-- Modal -->
+<div class="modal fade" id="modalIngreso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Agregar Ingreso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="form-crear-ingreso" action="{% url 'ingreso_crear' %}">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre Usuario</label>
+                            {{ form.usuCedula }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Proveedor</label>
+                            {{ form.proveedorNit }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Valor</label>
+                            {{ form.ingresoValor }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Cantidad</label>
+                            {{ form.ingresoCantidad }}
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5 class="mb-3">Productos asociados</h5>
+                    {{ formset.management_form }}
+
+                    <div id="form-container">
+                        {% for f in formset %}
+                            <div class="form-row border p-2 mb-2 rounded">
+                                {{ f.as_p }}
+                                <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div id="empty-form" style="display:none;">
+                        <div class="form-row border p-2 mb-2 rounded">
+                            {{ formset.empty_form.as_p }}
+                            <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="add-form" class="btn btn-secondary mb-3">
+                        <i class="bi bi-plus"></i> Agregar Producto
+                    </button>
+
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save"></i> Guardar Ingreso
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS formset dinámico -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const addButton = document.querySelector("#add-form");
@@ -145,16 +147,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let formNum = formContainer.children.length;
 
-    if (addButton) {
-        addButton.addEventListener("click", function () {
-            let newFormHtml = emptyForm.replace(/_prefix_/g, formNum);
-            formContainer.insertAdjacentHTML("beforeend", newFormHtml);
-            formNum++;
-            totalForms.value = formNum;
-        });
-    }
+    addButton.addEventListener("click", function () {
+        let newFormHtml = emptyForm.replace(/__prefix__/g, formNum);
+        formContainer.insertAdjacentHTML("beforeend", newFormHtml);
+        formNum++;
+        totalForms.value = formNum;
+    });
 
-    // Eliminar fila de producto
     formContainer.addEventListener("click", function (e) {
         if (e.target.classList.contains("remove-form")) {
             e.target.closest(".form-row").remove();
@@ -164,4 +163,73 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-{%endblock%}
+
+<!-- SweetAlert2 confirmación -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.btn-confirmar-eliminacion').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const form = btn.closest('form');
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¡Esta acción no se puede deshacer!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+});
+</script>
+
+<!-- Mensajes de éxito -->
+{% if messages %}
+  {% for message in messages %}
+    {% if 'agregado' in message.tags %}
+      <script>
+        Swal.fire({
+          title: "¡Ingreso agregado!",
+          text: "{{ message }}",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2500
+        });
+      </script>
+    {% elif 'eliminado' in message.tags %}
+      <script>
+        Swal.fire({
+          title: "¡Ingreso eliminado!",
+          text: "{{ message }}",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2500
+        });
+      </script>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<!-- CSS modal flotante -->
+<style>
+.modal-dialog {
+    max-width: 800px;
+    margin: 1.75rem auto;
+}
+.modal-content {
+    border-radius: 8px;
+    position: relative;
+    z-index: 1200 !important;
+}
+.modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}

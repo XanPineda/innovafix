@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container py-5">
+
+    <h1 class="mb-4">Registrar Nueva Venta</h1>
+
+    <form method="post" id="form-crear-venta" action="{% url 'venta_crear' %}">
+        {% csrf_token %}
+
+        <!-- Campos principales de la venta -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Cliente</label>
+                {{ form.clienteId }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Usuario</label>
+                {{ form.usuCedula }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Valor</label>
+                {{ form.ventaValor }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Cantidad</label>
+                {{ form.ventaCantidad }}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Productos vendidos (formset) -->
+        <h5 class="mb-3">Productos Vendidos</h5>
+        {{ formset.management_form }}
+
+        <div id="form-container">
+            {% for f in formset %}
+                <div class="form-row border p-2 mb-2 rounded">
+                    {{ f.as_p }}
+                    <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Formulario vacío para clonar -->
+        <div id="empty-form" style="display:none;">
+            <div class="form-row border p-2 mb-2 rounded">
+                {{ formset.empty_form.as_p }}
+                <button type="button" class="btn btn-danger btn-sm remove-form">Eliminar</button>
+            </div>
+        </div>
+
+        <button type="button" id="add-form" class="btn btn-secondary mb-3">
+            <i class="bi bi-plus"></i> Agregar Producto
+        </button>
+
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save"></i> Guardar Venta
+            </button>
+            <a href="{% url 'venta_listar' %}" class="btn btn-outline-danger">Cancelar</a>
+        </div>
+    </form>
+
+</div>
+
+<!-- ===== JS formset dinámico ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const addButton = document.querySelector("#add-form");
+    const formContainer = document.querySelector("#form-container");
+    const totalForms = document.querySelector("#id_productoventa_set-TOTAL_FORMS");
+    const emptyForm = document.querySelector("#empty-form").innerHTML;
+
+    let formNum = formContainer.children.length;
+
+    addButton.addEventListener("click", function () {
+        let newFormHtml = emptyForm.replace(/__prefix__/g, formNum);
+        formContainer.insertAdjacentHTML("beforeend", newFormHtml);
+        formNum++;
+        totalForms.value = formNum;
+    });
+
+    formContainer.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-form")) {
+            e.target.closest(".form-row").remove();
+            formNum--;
+            totalForms.value = formNum;
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente, Usuario, Proveedor, Ingreso, Producto, Venta, Rol, Equipo
+from .models import Cliente, Usuario, Proveedor, Ingreso, Producto, Venta, Rol, Equipo, ProductoVenta
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 
@@ -25,6 +25,21 @@ class ProveedorForm(forms.ModelForm):
             'telefono': 'Ingrese el número de teléfono del proveedor.',
             'direccion': 'Ingrese la dirección del proveedor.',
         }
+        error_messages = {
+            'nombre': {
+                'required': 'El nombre del proveedor es obligatorio.',
+            },
+            'proveedorNit': {
+                'required': 'El NIT es obligatorio.',
+                'unique': 'Este NIT ya está registrado.',
+            },
+            'telefono': {
+                'required': 'El teléfono es obligatorio.',
+            },
+            'direccion': {
+                'required': 'La dirección es obligatoria.',
+        },
+}
 
 
 class IngresoForm(forms.ModelForm):
@@ -74,6 +89,38 @@ class ClienteForm(forms.ModelForm):
             'clienteTelefono': 'Número de teléfono',
             'clienteDireccion': 'Dirección',
         }
+        error_messages = {
+            'clienteCedula': {
+                'required': 'La cédula es obligatoria.',
+                'unique': 'Esta cédula ya está registrada.',
+            },
+            'clienteCorreo': {
+                'required': 'El correo electrónico es obligatorio.',
+                'invalid': 'Ingrese un correo electrónico válido.',
+                'unique': 'Este correo ya está registrado.',
+            },
+            'clienteUsuario': {
+                'unique': 'Este nombre de usuario ya está en uso.',
+            },
+            'clienteTelefono': {
+                'required': 'El número de teléfono es obligatorio.',
+            },
+            'clienteDireccion': {
+                'required': 'La dirección es obligatoria.',
+            },
+            'clienteContrasena': {
+                'required': 'La contraseña es obligatoria.',
+            },
+            'clienteNombre': {
+                'required': 'El nombre es obligatorio.',
+            },
+            'clienteApellido': {
+                'required': 'El apellido es obligatorio.',
+            },
+            'clienteUsuario': {
+                'required': 'El usuario es obligatorio.',
+        },
+}
 
 
 class UsuarioForm(forms.ModelForm):
@@ -107,6 +154,36 @@ class UsuarioForm(forms.ModelForm):
             'usuTelefono': 'Teléfono',
             'usuDireccion': 'Dirección',
             'usuFoto': 'Foto de Perfil (URL o archivo)',
+        }
+        error_messages = {
+            'usuCedula': {
+                'required': 'La cédula es obligatoria.',
+                'unique': 'Esta cédula ya está registrada.',
+            },
+            'usuCorreo': {
+                'required': 'El correo electrónico es obligatorio.',
+                'invalid': 'Ingrese un correo electrónico válido.',
+                'unique': 'Este correo ya está registrado.',
+            },
+            'usuUsuario': {
+                'unique': 'Este nombre de usuario ya está en uso.',
+                'required': 'El usuario es obligatorio.',
+            },
+            'usuTelefono': {
+                'required': 'El número de teléfono es obligatorio.',
+            },
+            'usuDireccion': {
+                'required': 'La dirección es obligatoria.',
+            },
+            'usuContrasena': {
+                'required': 'La contraseña es obligatoria.',
+            },
+            'usuNombre': {
+                'required': 'El nombre es obligatorio.',
+            },
+            'usuApellido': {
+                'required': 'El apellido es obligatorio.',
+         },
 }
 
 class RolForm (forms.ModelForm):
@@ -144,37 +221,49 @@ class ProductoForm(forms.ModelForm):
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = [
-            'ventaId',
-            'ventaCantidad',
-            'ventaTipoProducto',
-            'ventaMetodoPago',
-            'ventaPrecio',
-            'productoId',
-            'clienteCedula',
-            'usuCedula',
-        ]
+        fields = ['cliente']
+        labels = {'cliente': 'Cliente'}
         widgets = {
-            'ventaId': forms.TextInput(attrs={'class': 'form-control'}),
-            'ventaCantidad': forms.NumberInput(attrs={'class': 'form-control'}),
-            'ventaTipoProducto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opcional'}),
-            'ventaMetodoPago': forms.TextInput(attrs={'class': 'form-control'}),
-            'ventaPrecio': forms.NumberInput(attrs={'class': 'form-control'}),
-            'productoId': forms.Select(attrs={'class': 'form-control'}),
-            'clienteCedula': forms.Select(attrs={'class': 'form-control'}),
-            'usuCedula': forms.Select(attrs={'class': 'form-control'}),
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
         }
 
-        labels = {
-            'ventaId': 'ID de Venta',
-            'ventaCantidad': 'Cantidad Vendida',
-            'ventaTipoProducto': 'Tipo de Producto (opcional)',
-            'ventaMetodoPago': 'Método de Pago',
-            'ventaPrecio': 'Precio Total',
-            'productoId': 'Producto',
-            'clienteCedula': 'Cliente',
-            'usuCedula': 'Usuario que registró la venta',
+class ProductoVentaForm(forms.ModelForm):
+    class Meta:
+        model = ProductoVenta
+        fields = ['producto', 'cantidad', 'precio_unitario', 'subtotal']
+        widgets = {
+            'producto': forms.Select(attrs={'class': 'form-control producto-select'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control cantidad-input'}),
+            'precio_unitario': forms.HiddenInput(),
+            'subtotal': forms.HiddenInput(),
         }
+        
+    class Meta:
+        model = ProductoVenta
+        fields = ['producto', 'cantidad', 'precio_unitario', 'subtotal']
+        labels = {
+            'producto': 'Producto',
+            'cantidad': 'Cantidad',
+        }
+        widgets = {
+            'producto': forms.Select(attrs={'class': 'form-control producto-select'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control cantidad-input'}),
+        }
+
+    def _init_(self, *args, **kwargs):
+        super()._init_(*args, **kwargs)
+        # Mostrar solo productos con stock
+        self.fields['producto'].queryset = Producto.objects.filter(productoCantidad__gt=0)
+        self.fields['producto'].label_from_instance = lambda obj: f"{obj.productoNombre} (Stock: {obj.productoCantidad}, Precio: ${obj.productoPrecioUnidad})"
+
+# Creamos el formset inline para manejar varios ProductoVenta asociados a una Venta
+ProductoVentaFormSet = inlineformset_factory(
+    Venta,
+    ProductoVenta,
+    form=ProductoVentaForm,
+    extra=1,
+    can_delete=True
+)
 
 class EquipoForm(forms.ModelForm):
     class Meta:
@@ -194,6 +283,24 @@ class EquipoForm(forms.ModelForm):
             'usuNombre': forms.Select(attrs={'class': 'form-control'}),
             'equipoEstado': forms.Select(attrs={'class': 'form-control'}),
         }
+        error_messages = {
+            'equipoRef': {
+                'required': 'La referencia del equipo es obligatoria.',
+            },
+            'equipoNovedad': {
+                'required': 'La novedad del equipo es obligatoria.',
+            },
+            'clienteNombre': {
+                'required': 'El cliente es obligatorio.',
+            },
+            'usuNombre': {
+                'required': 'El usuario es obligatorio.',
+            },
+            'equipoEstado': {
+                'required': 'El estado del equipo es obligatorio.',
+        },
+}
+        
 
 # Formset para Productos asociados al Ingreso
 ProductoFormSet = inlineformset_factory(

@@ -8,15 +8,17 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.template.loader import render_to_string
-from .forms import IngresoForm, ProductoFormSet
+from .forms import IngresoForm, ProductoForm, VentaForm, ProductoVentaFormSet, EquipoForm, UsuarioForm, ProveedorForm, RolForm, ClienteForm
 from .models import (
     Ingreso, Producto, Venta, Cliente, Usuario, Proveedor,
-    Rol, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso, Equipo
+    Rol, VistaIngresoInfo, VistaCompraVenta, VistaProcesoIngreso, Equipo, ProductoVenta
 )
 from .forms import RolForm, ProveedorForm, ClienteForm, UsuarioForm, IngresoForm, ProductoForm, VentaForm, EquipoForm
 from collections import Counter
 from django.db.models import Count
-import json
+import json, datetime
+from django.db import transaction
+from django.contrib import messages
 
 
 # -------------------------------
@@ -66,7 +68,7 @@ def exportar_ingreso_info_excel(request):
         'ID': [dato.ingresoId for dato in datos],
         'Valor': [dato.ingresoValor for dato in datos],
         'Cantidad': [dato.ingresoCantidad for dato in datos],
-        'Nombre': [dato.nombre for dato in datos],
+        'Nombre': [dato.proveedorNombre for dato in datos],
         'Dirección': [dato.direccion for dato in datos],
         'Usuario Nombre': [dato.usuNombre for dato in datos],
         'Usuario Apellido': [dato.usuApellido for dato in datos],
@@ -187,7 +189,7 @@ def exportar_proceso_ingreso_excel(request):
         'Usuario Nombre': [dato.usuNombre for dato in datos],
         'ID Ingreso': [dato.ingresoId for dato in datos],
         'Valor': [dato.ingresoValor for dato in datos],
-        'Nombre': [dato.nombre for dato in datos],
+        'Nombre': [dato.proveedorNombre for dato in datos],
     }
     df = pd.DataFrame(data)
 
@@ -251,6 +253,7 @@ def proveedor_listar(request):
         form = ProveedorForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Proveedor agregado correctamente.", extra_tags='agregado')
             return redirect('proveedor_listar')
     else:
         form = ProveedorForm()
@@ -260,24 +263,41 @@ def proveedor_listar(request):
         'form': form,
         'proveedores': proveedores
     })
+
+@login_required
+def proveedor_editar(request, proveedorNit):
+    proveedor = get_object_or_404(Proveedor, proveedorNit=proveedorNit)
+    
+    if request.method == 'POST':
+        form = ProveedorForm(request.POST, instance=proveedor)
+        if form.is_valid():
+            form.save()
+            return redirect('proveedor_listar')  # Redirige a la lista de proveedores
+    else:
+        form = ProveedorForm(instance=proveedor)
+    return render(request, 'proveedor/proveedor/proveedor_editar.html', {'form': form, 'proveedor':proveedor})
+
+
+
 @login_required
 @require_POST
 def proveedor_eliminar(request, id):
     proveedor = get_object_or_404(Proveedor, proveedorNit=id)
     proveedor.delete()
+    messages.success(request, "Proveedor eliminado correctamente.", extra_tags='eliminado')
     return redirect('proveedor_listar')
 
 #----------------------------
-#VISTA DE ROL
+# VISTA DE ROL
 #-----------------------------
-
 
 @login_required
 def rol_listar(request):
     if request.method == 'POST':
         form = RolForm(request.POST)
         if form.is_valid():
-            form.save()  # Ya no es necesario usar commit=False ni asignar usuario
+            form.save()
+            messages.success(request, "Rol agregado correctamente.", extra_tags='agregado')
             return redirect('rol_listar')
     else:
         form = RolForm()
@@ -291,8 +311,9 @@ def rol_listar(request):
 @login_required
 @require_POST
 def rol_eliminar(request, rolId):
-    rol = get_object_or_404(Rol, rolId = rolId)
+    rol = get_object_or_404(Rol, rolId=rolId)
     rol.delete()
+    messages.success(request, "Rol eliminado correctamente.", extra_tags='eliminado')
     return redirect('rol_listar')
 
 #----------------------------
@@ -307,6 +328,7 @@ def cliente_listar(request):
             cliente_obj = form.save(commit=False)
             cliente_obj.cliente = request.user
             cliente_obj.save()
+            messages.success(request, "Cliente agregado correctamente.", extra_tags='agregado')
             return redirect('cliente_listar')
     else:
         form = ClienteForm()
@@ -322,7 +344,21 @@ def cliente_listar(request):
 def cliente_eliminar(request, clienteCedula):
     cliente = get_object_or_404(Cliente, clienteCedula=clienteCedula)
     cliente.delete()
+    messages.success(request, "Cliente eliminado correctamente.", extra_tags='eliminado')
     return redirect('cliente_listar')
+
+@login_required
+def cliente_editar(request, clienteCedula):
+    cliente = get_object_or_404(Cliente, clienteCedula=clienteCedula)
+    
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+        if form.is_valid():
+            form.save()
+            return redirect('cliente_listar')  # Redirige a la lista de clientes
+    else:
+        form = ClienteForm(instance=cliente)
+    return render(request, 'proveedor/cliente/cliente_editar.html', {'form': form, 'cliente':cliente})
 
 #----------------------------
 #VISTA DE USUARIOS
@@ -336,6 +372,7 @@ def usuario_listar(request):
             usuario_obj = form.save(commit=False)
             usuario_obj.usuario = request.user
             usuario_obj.save()
+            messages.success(request, "Usuario agregado correctamente.", extra_tags='agregado')
             return redirect('usuario_listar')
     else:
         form = UsuarioForm()
@@ -346,6 +383,7 @@ def usuario_listar(request):
     roles = Rol.objects.all()
     labels = [rol.rolNombre for rol in roles]
     data = [usuarios.filter(rolId=rol).count() for rol in roles]
+
     return render(request, 'proveedor/usuario/usuario.html', {
         'form': form,
         'usuarios': usuarios,
@@ -355,26 +393,39 @@ def usuario_listar(request):
         'roles_data': data,
     })
 
+
 @login_required
 @require_POST
 def usuario_eliminar(request, usuCedula):
     usuario = get_object_or_404(Usuario, usuCedula=usuCedula)
     usuario.delete()
+    messages.success(request, "Usuario eliminado correctamente.", extra_tags='eliminado')
     return redirect('usuario_listar')
+
+@login_required
+def usuario_editar(request, usuCedula):
+    usuario = get_object_or_404(Usuario, usuCedula=usuCedula)
+    
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            return redirect('usuario_listar')  # Redirige a la lista de usuarios
+    else:
+        form = UsuarioForm(instance=usuario)
+    return render(request, 'proveedor/usuario/usuario_editar.html', {'form': form, 'usuario':usuario})
 
 # ==============================
 # LISTAR INGRESOS
 # ==============================
+@login_required
 def ingreso_listar(request):
-    """
-    Muestra la lista de ingresos y prepara un form y formset para el modal de creación.
-    """
     ProductoFormSet = inlineformset_factory(Ingreso, Producto, form=ProductoForm, extra=1, can_delete=True)
     form = IngresoForm()
     formset = ProductoFormSet()
 
     ingresos = Ingreso.objects.all().select_related('proveedorNit', 'usuCedula')
-    
+
     return render(request, 'proveedor/ingreso/ingreso.html', {
         'ingresos': ingresos,
         'form': form,
@@ -385,32 +436,25 @@ def ingreso_listar(request):
 # ==============================
 # CREAR INGRESO + PRODUCTOS
 # ==============================
+@login_required
 def ingreso_crear(request):
-    ProductoFormSet = inlineformset_factory(
-        Ingreso,
-        Producto,
-        form=ProductoForm,
-        extra=1,  # mínimo uno visible
-        can_delete=True
-    )
+    ProductoFormSet = inlineformset_factory(Ingreso, Producto, form=ProductoForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
-        print("📌 POST recibido:", request.POST)  # <--- DEBUG
-
         form = IngresoForm(request.POST)
         if form.is_valid():
-            ingreso = form.save(commit=False)  # aún no guarda
+            ingreso = form.save(commit=False)
             formset = ProductoFormSet(request.POST, instance=ingreso)
 
             if formset.is_valid():
                 ingreso.save()
                 formset.save()
-                messages.success(request, "✅ El ingreso y los productos fueron registrados correctamente.")
+                messages.success(request, "Ingreso agregado correctamente.", extra_tags='agregado')
                 return redirect('ingreso_listar')
             else:
-                print("❌ Errores del formset:", formset.errors)  # <--- DEBUG
+                messages.error(request, "Error al registrar los productos.")
         else:
-            print("❌ Errores del formulario ingreso:", form.errors)  # <--- DEBUG
+            messages.error(request, "Error al registrar el ingreso.")
             formset = ProductoFormSet(request.POST)
     else:
         form = IngresoForm()
@@ -420,33 +464,27 @@ def ingreso_crear(request):
         'form': form,
         'formset': formset
     })
+
+
 # ==============================
 # EDITAR INGRESO + PRODUCTOS
 # ==============================
-
+@login_required
 def ingreso_editar(request, id):
     ingreso = get_object_or_404(Ingreso, ingresoId=id)
-
-    ProductoFormSet = inlineformset_factory(
-        Ingreso,
-        Producto,
-        form=ProductoForm,
-        extra=0,         # Solo muestra los existentes
-        can_delete=True
-    )
+    ProductoFormSet = inlineformset_factory(Ingreso, Producto, form=ProductoForm, extra=0, can_delete=True)
 
     if request.method == "POST":
         form = IngresoForm(request.POST, instance=ingreso)
         formset = ProductoFormSet(request.POST, instance=ingreso)
 
         if form.is_valid() and formset.is_valid():
-            form.save()  # Guarda los datos del ingreso
-            formset.save()  # Guarda los productos asociados
-            messages.success(request, "✅ El ingreso y los productos fueron actualizados correctamente.")
+            form.save()
+            formset.save()
+            messages.success(request, "Ingreso actualizado correctamente.", extra_tags='agregado')
             return redirect("ingreso_listar")
         else:
-            print("Errores form:", form.errors)
-            print("Errores formset:", formset.errors)
+            messages.error(request, "Error al actualizar el ingreso o los productos.")
     else:
         form = IngresoForm(instance=ingreso)
         formset = ProductoFormSet(instance=ingreso)
@@ -456,28 +494,30 @@ def ingreso_editar(request, id):
         "formset": formset,
     })
 
+
 # ==============================
 # ELIMINAR INGRESO
 # ==============================
+@login_required
 def ingreso_eliminar(request, id):
-    """
-    Elimina un ingreso y todos sus productos asociados.
-    """
     ingreso = get_object_or_404(Ingreso, pk=id)
     if request.method == 'POST':
         ingreso.delete()
+        messages.success(request, "Ingreso eliminado correctamente.", extra_tags='eliminado')
         return redirect('ingreso_listar')
-    ingresos = Ingreso.objects.all().select_related('proveedorNit', 'usuCedula').prefetch_related('producto_set')
-    return render(request, 'proveedor/ingreso/ingreso_listar.html', {'ingresos': ingresos})
+    return redirect('ingreso_listar')
 
+
+# ==============================
+# EXPORTAR INGRESOS A EXCEL
+# ==============================
+@login_required
 def exportar_ingresos_excel(request):
     from django.http import HttpResponse
     import pandas as pd
 
-    # Obtener los ingresos
     ingresos = Ingreso.objects.select_related('proveedorNit', 'usuCedula').all()
 
-    # Crear un DataFrame de pandas
     data = {
         'ID': [ingreso.ingresoId for ingreso in ingresos],
         'Proveedor': [ingreso.proveedorNit.nombre for ingreso in ingresos],
@@ -487,54 +527,38 @@ def exportar_ingresos_excel(request):
     }
     df = pd.DataFrame(data)
 
-    # Crear la respuesta HTTP
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="ingresos.xlsx"'
-
-    # Exportar a Excel
     df.to_excel(response, index=False)
 
     return response
 
- # Exportar a PDF
+
+# ==============================
+# EXPORTAR INGRESOS A PDF
+# ==============================
+@login_required
 def exportar_ingresos_pdf(request):
     from django.http import HttpResponse
     from django.template.loader import get_template
     from xhtml2pdf import pisa
-    # Obtener los ingresos
+
     ingresos = Ingreso.objects.select_related('proveedorNit', 'usuCedula').all()
-    # Cargar la plantilla HTML
     template = get_template('proveedor/ingreso/ingreso_pdf.html')
-    context = {
-        'ingresos': ingresos,
-        }
-    html = template.render(context)    @login_required
-    def ingreso_listar(request):
-        ingresos = Ingreso.objects.all()
-        return render(request, 'proveedor/ingreso/ingreso_listar.html', {
-            'ingresos': ingresos
-        })
-    # Crear la respuesta HTTP
+    context = {'ingresos': ingresos}
+    html = template.render(context)
+
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="ingresos.pdf"'
-    # Convertir HTML a PDF
     pisa_status = pisa.CreatePDF(html, dest=response)
+
     if pisa_status.err:
         return HttpResponse('Error al generar el PDF')
     return response
 
 #----------------------------
-#VISTA DE PRODUCTO
+# VISTA DE PRODUCTO
 #-----------------------------
-
-from django.db import IntegrityError
-
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Producto
-from .forms import ProductoForm
 
 # Generador automático de productoId
 def generar_producto_id():
@@ -564,7 +588,7 @@ def producto_listar(request):
                 messages.error(request, "❌ El ID del producto ya existe.")
             else:
                 producto_obj.save()
-                messages.success(request, "✅ Producto registrado exitosamente.")
+                messages.success(request, "Producto registrado exitosamente.", extra_tags='agregado')
                 return redirect('producto_listar')
         else:
             messages.error(request, "❌ Formulario inválido. Revisa los campos.")
@@ -586,69 +610,102 @@ def producto_listar(request):
 def producto_eliminar(request, producto_id):
     producto = get_object_or_404(Producto, productoId=producto_id)
     producto.delete()
-    messages.success(request, "✅ Producto eliminado correctamente.")
+    messages.success(request, "Producto eliminado correctamente.", extra_tags='eliminado')
     return redirect('producto_listar')
 
 #----------------------------
-#VISTA DE VENTA
+# VISTA DE LISTAR VENTAS
 #-----------------------------
-
-def generar_venta_id():
-# Función para generar un ID único con formato VNT001, VNT002, etc.
-    def generar_venta_id():
-        ultimo = Venta.objects.order_by('-ventaId').first()
-        if ultimo and ultimo.ventaId.startswith('VNT'):
-            try:
-                numero = int(ultimo.ventaId.replace('VNT', '')) + 1
-            except ValueError:
-                numero = 1
-        else:
-         numero = 1
-        return f"VNT{numero:03d}"
 
 @login_required
 def venta_listar(request):
-    if request.method == 'POST':
-        form = VentaForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                usuario_actual = Usuario.objects.get(usuario=request.user)
-                venta_obj = form.save(commit=False)
-                venta_obj.usuCedula = usuario_actual
-                venta_obj.ventaId = generar_venta_id()
-                venta_obj.save()
-                messages.success(request, "✅ Venta registrada exitosamente.")
-                return redirect('venta_listar')
-            except Usuario.DoesNotExist:
-                messages.error(request, "❌ No se encontró el usuario asociado.")
-        else:
-            messages.error(request, "❌ Formulario inválido. Revisa los campos.")
-            print(form.errors)  # Para depuración en consola
-    else:
-        form = VentaForm()
+    ventas = Venta.objects.all().order_by('-fecha')  # orden descendente por fecha
+    form = VentaForm()
+    formset = ProductoVentaFormSet()
+    productos = Producto.objects.all()
 
-    ventas = Venta.objects.all()
-    return render(request, 'proveedor/venta/venta.html', {
+    response = render(request, 'venta/venta.html', {
+        'ventas': ventas,
         'form': form,
-        'ventas': ventas
+        'formset': formset,
+        'productos': productos
     })
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
+
+#----------------------------
+# VISTA DE REGISTRAR VENTAS
+#-----------------------------
+
+@login_required
+def registrar_venta(request):
+    if request.method == "POST":
+        venta_form = VentaForm(request.POST)
+        formset = ProductoVentaFormSet(request.POST)
+
+        if venta_form.is_valid() and formset.is_valid():
+            venta = venta_form.save(commit=False)
+            venta.total = 0
+            venta.save()
+
+            total = 0
+            productos = formset.save(commit=False)
+            for p in productos:
+                p.venta = venta
+                p.precio_unitario = p.producto.productoPrecioUnidad
+                p.subtotal = p.cantidad * p.precio_unitario
+                total += p.subtotal
+                p.save()
+
+                # actualizar stock del producto
+                p.producto.productoCantidad -= p.cantidad
+                p.producto.save()
+
+            venta.total = total
+            venta.save()
+
+            messages.success(request, "Venta registrada con éxito.", extra_tags='agregado')
+            return redirect("venta_listar")
+        else:
+            messages.error(request, "Error al registrar la venta. Revisa los campos.")
+    else:
+        venta_form = VentaForm()
+        formset = ProductoVentaFormSet()
+
+    ventas = Venta.objects.all().order_by('-fecha')
+    productos = Producto.objects.all()
+
+    return render(request, "venta/venta.html", {
+        "ventas": ventas,
+        "form": venta_form,
+        "formset": formset,
+        "productos": productos
+    })
+
+#----------------------------
+# VISTA DE ELIMINAR VENTAS
+#-----------------------------
 
 @login_required
 @require_POST
 def venta_eliminar(request, ventaId):
     venta = get_object_or_404(Venta, ventaId=ventaId)
     venta.delete()
+    messages.success(request, "Venta eliminada correctamente.", extra_tags='eliminado')
     return redirect('venta_listar')
 
- # Exportar a Excel
+#----------------------------
+# EXPORTAR A EXCEL
+#-----------------------------
+
 def exportar_ventas_excel(request):
     from django.http import HttpResponse
     import pandas as pd
 
-    # Obtener las ventas
     ventas = Venta.objects.select_related('productoId', 'clienteCedula', 'usuCedula').all()
 
-    # Crear un DataFrame de pandas
     data = {
         'ID Venta': [venta.ventaId for venta in ventas],
         'Cantidad': [venta.ventaCantidad for venta in ventas],
@@ -661,42 +718,39 @@ def exportar_ventas_excel(request):
     }
     df = pd.DataFrame(data)
 
-    # Crear la respuesta HTTP
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="ventas.xlsx"'
-
-    # Exportar a Excel
     df.to_excel(response, index=False)
 
     return response
 
- # Exportar a PDF
+
+#----------------------------
+# EXPORTAR A PDF
+#-----------------------------
+
 def exportar_ventas_pdf(request):
     from django.http import HttpResponse
     from django.template.loader import get_template
     from xhtml2pdf import pisa
 
-    # Obtener las ventas
     ventas = Venta.objects.select_related('productoId', 'clienteCedula', 'usuCedula').all()
-
-    # Cargar la plantilla HTML
     template = get_template('proveedor/venta/venta_pdf.html')
-    context = {
-        'ventas': ventas,
-    }
+    context = {'ventas': ventas}
     html = template.render(context)
 
-    # Crear la respuesta HTTP
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="ventas.pdf"'
-
-    # Convertir HTML a PDF
     pisa_status = pisa.CreatePDF(html, dest=response)
+
     if pisa_status.err:
         return HttpResponse('Error al generar el PDF')
     return response
 
-#VISTA DE EQUIPOS
+
+#----------------------------
+# VISTA DE EQUIPOS
+#-----------------------------
 
 @login_required
 def equipo_listar(request):
@@ -704,6 +758,11 @@ def equipo_listar(request):
         form = EquipoForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Equipo agregado correctamente.", extra_tags='agregado')
+            return redirect('equipo_listar')
+    else:
+        form = EquipoForm()
+
     equipos = Equipo.objects.all()
     equipos_django = User.objects.all()
     equipos_count = equipos.count()
@@ -722,11 +781,11 @@ def equipo_listar(request):
     colores_barras = [colores_por_estado.get(estado, "rgba(201, 203, 207, 0.7)") for estado in estados_labels]
 
     return render(request, 'proveedor/equipos/equipos.html', {
-        'form': EquipoForm(),
+        'form': form,
         'equipos': equipos,
         'equipos_count': equipos_count,
         'equipos_django': equipos_django,
-        'estados_labels': json.dumps(estados_labels),  # Convertir a JSON
+        'estados_labels': json.dumps(estados_labels),
         'estados_data': json.dumps(estados_data),
         'colores_barras': json.dumps(colores_barras),
     })
@@ -734,7 +793,19 @@ def equipo_listar(request):
 @login_required
 @require_POST
 def equipo_eliminar(request, pk):
-    equipo = Equipo.objects.get(pk=pk)
+    equipo = get_object_or_404(Equipo, pk=pk)
+    equipo.delete()
+    messages.success(request, "Equipo eliminado correctamente.", extra_tags='eliminado')
+    return redirect('equipo_listar')
+@login_required
+def equipo_editar(request, equipoId):
+    equipo = get_object_or_404(Equipo, equipoId=equipoId)
+    
     if request.method == 'POST':
-        equipo.delete()
-        return redirect('equipo_listar')
+        form = EquipoForm(request.POST, instance=equipo)
+        if form.is_valid():
+            form.save()
+            return redirect('equipo_listar')  # Redirige a la lista de equipos
+    else:
+        form = EquipoForm(instance=equipo)
+    return render(request, 'proveedor/equipos/equipo_editar.html', {'form': form, 'equipo':equipo})

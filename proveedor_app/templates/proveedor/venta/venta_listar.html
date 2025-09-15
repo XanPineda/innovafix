@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Listado de Ventas</h2>
+
+    <a href="{% url 'venta_crear' %}" class="btn btn-primary mb-3">Nueva Venta</a>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Usuario</th>
+                <th>Cantidad</th>
+                <th>Valor</th>
+                <th>Productos Vendidos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td>{{ venta.ventaId }}</td>
+                <td>{{ venta.clienteId.clienteNombre }}</td>
+                <td>{{ venta.usuCedula.usuNombre }} {{ venta.usuCedula.usuApellido }}</td>
+                <td>{{ venta.ventaCantidad }}</td>
+                <td>${{ venta.ventaValor }}</td>
+                <td>
+                    <ul>
+                        {% for producto in venta.productoventa_set.all %}
+                            <li>{{ producto.productoNombre }} ({{ producto.cantidad }})</li>
+                        {% empty %}
+                            <li>No hay productos vendidos</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{% url 'venta_editar' venta.ventaId %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'venta_eliminar' venta.ventaId %}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No hay ventas registradas</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

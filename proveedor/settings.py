@@ -128,6 +128,10 @@ LOGOUT_REDIRECT_URL = '/login/'  # A dónde te manda después del logout
 # Ruta del login si no está autenticado
 LOGIN_URL = '/login/'
 
+SESSION_COOKIE_AGE = 1800  # 30 minutos en segundos
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

@@ -1,12 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password
 
 class VistaIngresoInfo(models.Model):
     ingresoId = models.IntegerField(primary_key=True)
     ingresoValor = models.IntegerField()
     ingresoCantidad = models.IntegerField()
-    nombre = models.CharField(max_length=100)
+    proveedorNombre = models.CharField(max_length=100)  # nombre del proveedor
     direccion = models.CharField(max_length=200)
     usuNombre = models.CharField(max_length=25)
     usuApellido = models.CharField(max_length=25)
@@ -16,28 +17,28 @@ class VistaIngresoInfo(models.Model):
         managed = False
         db_table = 'ingresoinfo'
 
-
 class VistaCompraVenta(models.Model):
-    clienteNombre = models.CharField(max_length=25)
-    ventaId = models.CharField(max_length=20, primary_key=True)
-    ventaCantidad = models.IntegerField()
-    productoNombre = models.CharField(max_length=25)
-    productoPrecioUnidad = models.IntegerField()
-    class Meta:
+    clienteNombre = models.CharField(max_length=50)
+    ventaId = models.IntegerField(primary_key=True)
+    productoNombre = models.CharField(max_length=50)
+    ventaCantidad = models.IntegerField()  # cantidad del producto en la venta
+    productoPrecioUnidad = models.DecimalField(max_digits=12, decimal_places=2)
 
+    class Meta:
         managed = False
         db_table = 'compraventa'
 
+
 class VistaProcesoIngreso(models.Model):
-    usuNombre = models.CharField(max_length=25)
     ingresoId = models.IntegerField(primary_key=True)
     ingresoValor = models.IntegerField()
-    nombre = models.CharField(max_length=100)
+    proveedorNombre = models.CharField(max_length=100)
+    usuNombre = models.CharField(max_length=25)
 
     class Meta:
         managed = False
         db_table = 'procesoingreso'
-
+        
 class Rol (models.Model):
     rolId = models.AutoField(primary_key=True)
     rolNombre = models.CharField(max_length=20)
@@ -99,7 +100,7 @@ class Usuario(models.Model):
     usuUsuario = models.CharField(max_length=10)
     usuNombre = models.CharField(max_length=25, unique=True)
     usuApellido = models.CharField(max_length=25)
-    rolId = models.ForeignKey(Rol, on_delete=models.CASCADE, db_column='rolId')
+    rolId = models.ForeignKey(Rol, on_delete=models.CASCADE, db_column='rolId', null=True, blank=True)
     usuContrasena = models.CharField(max_length=10)
     usuCorreo = models.EmailField(max_length=35)
     usuTelefono = models.CharField(max_length=10)
@@ -129,24 +130,45 @@ class Producto(models.Model):
     class Meta:
         db_table = 'producto'
 
-    def _str_(self):
-        return self.productoNombre
+    def __str__(self):
+        return f"{self.productoNombre} - ${self.productoPrecioUnidad} - Stock: {self.productoCantidad}"
 
 class Venta(models.Model):
-    ventaId = models.CharField(max_length=20, primary_key=True)
-    ventaCantidad = models.IntegerField()
-    ventaTipoProducto = models.CharField(max_length=20, blank=True, null=True)  # Campo opcional
-    ventaMetodoPago = models.CharField(max_length=20)
-    ventaPrecio = models.IntegerField()
-    productoId = models.ForeignKey('Producto', to_field='productoId', on_delete=models.CASCADE, db_column='productoId')
-    clienteCedula = models.ForeignKey('Cliente', to_field='clienteCedula', on_delete=models.CASCADE, db_column='clienteCedula')
-    usuCedula = models.ForeignKey('Usuario', to_field='usuCedula', on_delete=models.CASCADE, db_column='usuCedula')
+    ventaId = models.AutoField(primary_key=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+    cliente = models.ForeignKey(
+        Cliente,
+        to_field="clienteCedula",   # 👈 clave foránea apunta a clienteCedula
+        db_column="clienteCedula",  # 👈 así la columna en la tabla venta se llamará clienteCedula
+        on_delete=models.CASCADE
+    )
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def __str__(self):
+        return f"Venta {self.ventaId} - {self.fecha}"
+        
+class ProductoVenta(models.Model):
+    productoventaId = models.AutoField(primary_key=True)
+    venta = models.ForeignKey(
+        Venta,
+        on_delete=models.CASCADE,
+        related_name="productos",
+        db_column='ventaId'
+    )
+    producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE,
+        db_column='productoId'
+    )
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=12, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2)
 
     class Meta:
-        db_table = 'venta'
+        db_table = 'producto_venta'
 
-        def __str__(self):
-            return f"Venta {self.ventaId} - Cliente {self.clienteCedula}"
+    def __str__(self):
+        return f"{self.producto.productoNombre} x {self.cantidad}"
     
 class Equipo(models.Model):
     ESTADO_CHOICES = [

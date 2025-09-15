@@ -61,7 +61,7 @@ ROOT_URLCONF = 'proveedor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'proveedor_app' / 'templates'],
+        'DIRS': [BASE_DIR / 'proveedor_app' / 'templates' / 'proveedor'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

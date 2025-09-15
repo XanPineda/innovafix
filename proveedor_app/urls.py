@@ -22,10 +22,12 @@ urlpatterns = [
     # Proveedor
     path('proveedores/', views.proveedor_listar, name='proveedor_listar'),
     path('proveedor/eliminar/<str:id>/', views.proveedor_eliminar, name='proveedor_eliminar'),
+    path('proveedores/<str:proveedorNit>/editar/', views.proveedor_editar, name='proveedor_editar'),
 
     # Usuario
     path('usuarios/', views.usuario_listar, name='usuario_listar'),
     path('usuario/eliminar/<str:usuCedula>/', views.usuario_eliminar, name='usuario_eliminar'),
+    path('usuarios/<str:usuCedula>/editar/', views.usuario_editar, name='usuario_editar'),
 
     # Ingreso
     path('ingresos/', views.ingreso_listar, name='ingreso_listar'),
@@ -45,18 +47,21 @@ urlpatterns = [
     path('rol/eliminar/<int:rolId>/', views.rol_eliminar, name='rol_eliminar'),
 
     # VENTAS
-    path('ventas/', views.venta_listar, name='venta_listar'),
-    path('ventas/eliminar/<str:ventaId>/', views.venta_eliminar, name='venta_eliminar'),
+    path('venta/crear/', views.registrar_venta, name='venta_crear'),
+    path('venta/', views.venta_listar, name='venta_listar'),
+    path('venta/eliminar/<int:ventaId>/', views.venta_eliminar, name='venta_eliminar'),
     path('exportar_ventas_excel/', views.exportar_ventas_excel, name='exportar_ventas_excel'),
     path('exportar_ventas_pdf/', views.exportar_ventas_pdf, name='exportar_ventas_pdf'),
 
     #Cliente
     path('clientes/', views.cliente_listar, name='cliente_listar'),
     path('cliente/eliminar/<str:clienteCedula>/', views.cliente_eliminar, name='cliente_eliminar'),
+    path('clientes/<str:clienteCedula>/editar/', views.cliente_editar, name='cliente_editar'),
 
     #Equipo
     path('equipos/', views.equipo_listar, name='equipo_listar'),
     path('equipo/eliminar/<int:pk>/', views.equipo_eliminar, name='equipo_eliminar'),
+    path('equipos/<int:equipoId>/editar/', views.equipo_editar, name='equipo_editar'),
 
     #vistas de reportes
     path('reportes/vista_ingreso_info/', views.vista_ingreso_info_listar, name='vista_ingreso_info_listar'),
